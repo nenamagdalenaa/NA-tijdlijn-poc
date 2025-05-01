@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: readonly_user
+      POSTGRES_PASSWORD: alleenlezen123
+      POSTGRES_DB: db_covid
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  backend:
+    build: ./back-end
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://readonly_user:alleenlezen123@db:5432/db_covid
+    ports:
+      - "4000:4000"
+
+  # frontend:
+  #   build: ./front-end
+  #   depends_on:
+  #     - backend
+  #   ports:
+  #     - "3000:3000"

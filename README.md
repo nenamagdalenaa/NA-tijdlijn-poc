@@ -16,15 +16,32 @@ Een optionele React frontend is voorbereid, maar nog niet geactiveerd.
 
 ---
 
-## 📦 Database downloaden
+## 📦 Database downloaden & en in project zetten
 
 Deze repository bevat het grote databasebestand niet i.v.m. GitHub-beperkingen.
 
-1. Download handmatig het volgende bestand:
-   - [`data.sql`](https://drive.google.com/file/d/1S5w-4RdwEbjNMAvsei2hRlAsYzp_rP9u/view?usp=sharing)
+1. Download handmatig het volgende zip-bestand:
+   - [`db_data.tar.gz`](https://drive.google.com/file/d/1iGdErddPQ2GCjm2IW0qRRiJgGxOukshA/view?usp=sharing)
 
-2. Plaats het in de `database/init/` map van dit project:
+2. Run de volgende commands in de terminal in de root van het project
 
+```bash
+mkdir db_data
+
+tar -xzf db_data.tar.gz -C db_data
+```
+
+### 🧯 Windows-gebruikers
+
+Je kunt `db_data.tar.gz` uitpakken met:
+
+- [7-Zip](https://www.7-zip.org/)
+- Of via WSL (Windows Subsystem for Linux):
+
+```bash
+mkdir db_data
+tar -xzf db_data.tar.gz -C db_data
+```
 
 ---
 
