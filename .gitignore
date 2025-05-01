@@ -13,3 +13,4 @@ yarn-error.log*
 
 # data
 db_data
+db_data.tar.gz
