@@ -45,6 +45,7 @@ In de root:
 
 ```bash
 docker-compose up --build
+```
 
 
 ## 🧪 Testen van de GraphQL API
@@ -67,3 +68,4 @@ query {
     date_scraped
   }
 }
+```
