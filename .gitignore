@@ -10,3 +10,6 @@ yarn-error.log*
 
 # VS Code
 .vscode/
+
+# data
+/database/init/data_readonly.sql
