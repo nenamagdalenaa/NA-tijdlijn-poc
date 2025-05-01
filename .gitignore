@@ -12,4 +12,4 @@ yarn-error.log*
 .vscode/
 
 # data
-/database/init/data_readonly.sql
+db_data
