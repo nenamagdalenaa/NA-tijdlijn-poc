@@ -22,7 +22,7 @@ export const typeDefs = gql`
     type: String
     sourcetype: String
     date_scraped: String
-    sourceURL: String
+    sourceurl: String
     date_extracted: String
     summary: String
     text: String
@@ -93,5 +93,6 @@ export const typeDefs = gql`
     topic(id: ID!): Topic    
     topics: [Topic!]!
     topEntitiesByTopic(topic_id: ID!): TopEntities!
+    getTimelineForTopic(topic_id: ID!): [Event!]!
   }
 `;

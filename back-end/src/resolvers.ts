@@ -65,6 +65,22 @@ export const resolvers = {
         })),
       };
     },
+    getTimelineForTopic: async (_: any, { topic_id }: { topic_id: string }) => {
+      const result = await pool.query(`
+        SELECT e.document_id, e.date, e.description, d.sourceurl
+        FROM "event" e
+        JOIN "document" d ON e.document_id = d.document_id
+        JOIN document_topic dt ON d.document_id = dt.document_id
+        WHERE dt.topic_id = $1
+        ORDER BY e.date ASC
+      `, [topic_id]);
+
+      return result.rows.map(row => ({
+        document: { document_id: row.document_id, sourceurl: row.sourceurl },
+        date: row.date,
+        description: row.description
+      }));
+    },
     documents: () => [],
     dossier: () => null,
     events: () => [],
