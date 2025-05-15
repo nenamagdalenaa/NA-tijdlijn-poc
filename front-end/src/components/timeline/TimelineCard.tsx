@@ -36,13 +36,13 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ timeline }) => {
   );
 
   return (
-    <div className="w-full px-4 py-8">
-      <div className="relative grid grid-cols-[1fr_1fr_5fr] gap-4">
+    <div className="w-full p-3">
+      <div className="relative grid grid-cols-[2fr_1fr_5fr] gap-4">
         {sortedDates.map((date, index) => (
           <div key={index} className="contents">
             {/* Datum links */}
             <div className="text-right pr-4">
-              <p className="text-[#467ac1] font-semibold">{date}</p>
+              <p className="text-black font-semibold">{date}</p>
             </div>
   
             {/* Verticale lijn met cirkel */}
@@ -54,7 +54,6 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ timeline }) => {
   
             {/* Card rechts */}
             <div className="bg-[#e6effa] p-4 rounded-lg shadow">
-              <h4 className="text-lg font-bold mb-2">Gebeurtenissen</h4>
               <ul className="list-disc list-inside space-y-2">
                 {groupedByDate[date].map((event, i) => (
                   <li key={i}>

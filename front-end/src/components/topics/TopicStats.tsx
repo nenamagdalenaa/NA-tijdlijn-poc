@@ -14,13 +14,13 @@ interface TopicStatsProps {
 
 const TopicStats: React.FC<TopicStatsProps> = ({ persons, organizations, groups }) => {
   return (
-    <div className="m-4 p-6 bg-blue-200 rounded-lg shadow-md text-left">
-      <h2 className="font-bold text-2xl text-gray-800 mb-6">Top Entiteiten</h2>
+    <div className="m-4 p-6 bg-[#e6effa] rounded-lg shadow-md text-left">
+      <h2 className="font-bold text-2xl mb-6">Top Entiteiten</h2>
 
       {persons && persons.length > 0 && (
         <div className="mb-4">
-          <h3 className="font-semibold text-lg text-gray-700 mb-2">Personen</h3>
-          <ul className="list-disc list-inside text-gray-600">
+          <h3 className="font-semibold text-lg mb-2">Personen</h3>
+          <ul className="list-disc list-inside">
             {persons.map((person, index) => (
               <li key={index} className="mb-1">
                 <span className="font-medium">{person.name}</span> ({person.count})

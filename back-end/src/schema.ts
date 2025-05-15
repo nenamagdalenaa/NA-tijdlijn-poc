@@ -93,6 +93,12 @@ export const typeDefs = gql`
     topic(id: ID!): Topic    
     topics: [Topic!]!
     topEntitiesByTopic(topic_id: ID!): TopEntities!
-    getTimelineForTopic(topic_id: ID!): [Event!]!
-  }
+    getTimelineForTopic(
+    topic_id: ID!,
+    persons: [String!],
+    organizations: [String!],
+    groups: [String!],
+    startDate: String,
+    endDate: String
+  ): [Event!]!  }
 `;

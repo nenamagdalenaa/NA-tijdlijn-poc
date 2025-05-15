@@ -36,8 +36,6 @@ const TopicGrid = () => {
 
   return (
     <div>
-      <h1 className='p-3 font-extrabold text-5xl'>Onderwerpen</h1>
-      <h1 className='p-3'>Klik op een onderwerp voor meer informatie over dat onderwerp.</h1>
       <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto">
       {data.topics.map((topic) => (
         <TopicCard

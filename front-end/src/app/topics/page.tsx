@@ -1,10 +1,12 @@
 import React from "react";
-import TopicGrid from "@/components/topics/TopicGrid"; // Importeer de TopicGrid component
+import TopicGrid from "@/components/topics/TopicGrid";
 
-export default function Onderwerpen() {
+export default function Topics() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="items-center flex flex-col gap-[32px]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+        <h1 className='mt-6 font-extrabold text-5xl'>Onderwerpen</h1>
+        <h1>Klik op een onderwerp voor meer informatie over dat onderwerp.</h1>
         <TopicGrid />
       </main>
     </div>

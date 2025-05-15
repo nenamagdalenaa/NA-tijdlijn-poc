@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-chrono": "^2.7.0",
+    "react-datepicker": "^8.3.0"
+  }
+}

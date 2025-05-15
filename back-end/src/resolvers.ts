@@ -6,6 +6,7 @@ export const resolvers = {
       const result = await pool.query('SELECT topic_id, name, summary, top_words FROM topic');
       return result.rows;
     },
+
     topic: async (_: any, args: { id: string }) => {
       const result = await pool.query(
         'SELECT topic_id, name, summary, top_words FROM topic WHERE topic_id = $1',
@@ -13,6 +14,7 @@ export const resolvers = {
       );
       return result.rows[0] || null;
     },
+
     topEntitiesByTopic: async (_: any, { topic_id }: { topic_id: string }) => {
       const personsRes = await pool.query(`
         SELECT p.person_id, p.name, COUNT(*) AS count
@@ -65,22 +67,92 @@ export const resolvers = {
         })),
       };
     },
-    getTimelineForTopic: async (_: any, { topic_id }: { topic_id: string }) => {
-      const result = await pool.query(`
-        SELECT e.document_id, e.date, e.description, d.sourceurl
-        FROM "event" e
-        JOIN "document" d ON e.document_id = d.document_id
-        JOIN document_topic dt ON d.document_id = dt.document_id
-        WHERE dt.topic_id = $1
-        ORDER BY e.date ASC
-      `, [topic_id]);
 
-      return result.rows.map(row => ({
-        document: { document_id: row.document_id, sourceurl: row.sourceurl },
-        date: row.date,
-        description: row.description
+    getTimelineForTopic: async (
+      _: any,
+      {
+        topic_id,
+        persons,
+        organizations,
+        groups,
+        startDate,
+        endDate,
+      }: {
+        topic_id: string;
+        persons: string[] | null;
+        organizations: string[] | null;
+        groups: string[] | null;
+        startDate: string | null;
+        endDate: string | null;
+      }
+    ) => {
+      const values: any[] = [];
+      const whereClauses: string[] = [];
+
+      let idx = 1;
+
+      // Altijd vereist: topic_id
+      whereClauses.push(`dt.topic_id = $${idx}`);
+      values.push(topic_id);
+      idx++;
+
+      if (persons && persons.length > 0) {
+        whereClauses.push(`dp.person_id = ANY($${idx})`);
+        values.push(persons);
+        idx++;
+      }
+
+      if (organizations && organizations.length > 0) {
+        whereClauses.push(`dorg.organization_id = ANY($${idx})`);
+        values.push(organizations);
+        idx++;
+      }
+
+      if (groups && groups.length > 0) {
+        whereClauses.push(`dg.group_id = ANY($${idx})`);
+        values.push(groups);
+        idx++;
+      }
+
+      if (startDate) {
+        whereClauses.push(`e.date >= $${idx}::date`);
+        values.push(startDate);
+        idx++;
+      }
+
+      if (endDate) {
+        whereClauses.push(`e.date <= $${idx}::date`);
+        values.push(endDate);
+        idx++;
+      }
+
+      const whereSQL = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+      const query = `
+    SELECT DISTINCT e.document_id, e.date, e.description, d.sourceurl
+    FROM event e
+    JOIN document d ON e.document_id = d.document_id
+    JOIN document_topic dt ON d.document_id = dt.document_id
+    LEFT JOIN document_person dp ON d.document_id = dp.document_id
+    LEFT JOIN document_organization dorg ON d.document_id = dorg.document_id
+    LEFT JOIN document_group dg ON d.document_id = dg.document_id
+    ${whereSQL}
+    ORDER BY e.date ASC;
+  `;
+
+      const result = await pool.query(query, values);
+
+      return result.rows.map(event => ({
+        document: {
+          document_id: event.document_id,
+          sourceurl: event.sourceurl,
+        },
+        date: event.date,
+        description: event.description,
       }));
     },
+
+
     documents: () => [],
     dossier: () => null,
     events: () => [],
