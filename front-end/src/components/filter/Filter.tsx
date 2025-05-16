@@ -9,13 +9,10 @@ type FilterProps = {
     onFilterChange?: (filters: { persons: string[]; organizations: string[]; groups: string[]; dateRange: { from: Date | null; to: Date | null; }; }) => void;
 };
 
-
-
 export default function Filter({ persons, organizations, groups, onFilterChange }: FilterProps) {
     const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
     const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([]);
     const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
-
 
     const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({
         from: null,
@@ -30,7 +27,6 @@ export default function Filter({ persons, organizations, groups, onFilterChange 
             dateRange,
         });
     };
-
 
     return (
         <div className='bg-[#e6effa] p-4 rounded-lg shadow-md'>

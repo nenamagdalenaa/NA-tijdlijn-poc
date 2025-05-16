@@ -18,7 +18,9 @@ async function startServer() {
 
   app.use(
     '/graphql',
-    cors(),
+    cors({
+      origin: 'http://localhost:3000', // React app URL
+    }),
     bodyParser.json(),
     expressMiddleware(server)
   );

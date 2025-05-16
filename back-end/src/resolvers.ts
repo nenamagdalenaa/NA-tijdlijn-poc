@@ -1,4 +1,29 @@
 import { pool } from './db';
+import { spawn } from 'child_process'
+
+async function getEmbeddingLocally(query: string): Promise<number[]> {
+  return new Promise((resolve, reject) => {
+    const python = spawn('python3', ['embed_query.py', query])
+    let data = ''
+
+    python.stdout.on('data', (chunk) => {
+      data += chunk
+    })
+
+    python.stderr.on('data', (err) => {
+      console.error('Python error:', err.toString())
+    })
+
+    python.on('close', () => {
+      try {
+        const embedding = JSON.parse(data)
+        resolve(embedding)
+      } catch (e) {
+        reject(e)
+      }
+    })
+  })
+}
 
 export const resolvers = {
   Query: {
@@ -91,7 +116,6 @@ export const resolvers = {
 
       let idx = 1;
 
-      // Altijd vereist: topic_id
       whereClauses.push(`dt.topic_id = $${idx}`);
       values.push(topic_id);
       idx++;
@@ -129,16 +153,16 @@ export const resolvers = {
       const whereSQL = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
       const query = `
-    SELECT DISTINCT e.document_id, e.date, e.description, d.sourceurl
-    FROM event e
-    JOIN document d ON e.document_id = d.document_id
-    JOIN document_topic dt ON d.document_id = dt.document_id
-    LEFT JOIN document_person dp ON d.document_id = dp.document_id
-    LEFT JOIN document_organization dorg ON d.document_id = dorg.document_id
-    LEFT JOIN document_group dg ON d.document_id = dg.document_id
-    ${whereSQL}
-    ORDER BY e.date ASC;
-  `;
+        SELECT DISTINCT e.document_id, e.date, e.description, d.sourceurl
+        FROM event e
+        JOIN document d ON e.document_id = d.document_id
+        JOIN document_topic dt ON d.document_id = dt.document_id
+        LEFT JOIN document_person dp ON d.document_id = dp.document_id
+        LEFT JOIN document_organization dorg ON d.document_id = dorg.document_id
+        LEFT JOIN document_group dg ON d.document_id = dg.document_id
+        ${whereSQL}
+        ORDER BY e.date ASC;
+      `;
 
       const result = await pool.query(query, values);
 
@@ -152,6 +176,118 @@ export const resolvers = {
       }));
     },
 
+    searchDocuments: async (_: any, { query }: { query: string }) => {
+      const embedding = await getEmbeddingLocally(query);
+      const embeddingLiteral = `[${embedding.join(',')}]`
+
+      const result = await pool.query(
+        `SELECT 
+        d.document_id,
+        d.title,
+        d.summary,
+        d.sourceurl,
+        dos.dossier_id,
+        dos.title AS dossier_title,
+        dos."sourceurl" AS dossier_sourceurl
+        FROM document d
+        LEFT JOIN dossier dos ON d.dossier_id = dos.dossier_id
+        WHERE d.embedding <=> $1::vector < 0.3
+        ORDER BY d.embedding <=> $1::vector;`,
+        [embeddingLiteral]
+      )
+
+      return result.rows.map(row => ({
+        document_id: row.document_id,
+        title: row.title,
+        summary: row.summary,
+        sourceurl: row.sourceurl,
+        dossier: row.dossier_id && {
+          dossier_id: row.dossier_id,
+          title: row.dossier_title,
+          sourceURL: row.dossier_sourceurl,
+        },
+      }))
+    },
+
+    getTimelineForQuery: async (
+      _: any,
+      {
+        query,
+        persons,
+        organizations,
+        groups,
+        startDate,
+        endDate,
+      }: {
+        query: string;
+        persons: string[] | null;
+        organizations: string[] | null;
+        groups: string[] | null;
+        startDate: string | null;
+        endDate: string | null;
+      }
+    ) => {
+      const embedding = await getEmbeddingLocally(query);
+      const embeddingLiteral = `[${embedding.join(',')}]`;
+
+      const values: any[] = [embeddingLiteral];
+      const whereClauses: string[] = [`e.embedding <=> $1::vector < 0.2`];
+      let idx = 2;
+
+      if (persons && persons.length > 0) {
+        whereClauses.push(`dp.person_id = ANY($${idx})`);
+        values.push(persons);
+        idx++;
+      }
+
+      if (organizations && organizations.length > 0) {
+        whereClauses.push(`dorg.organization_id = ANY($${idx})`);
+        values.push(organizations);
+        idx++;
+      }
+
+      if (groups && groups.length > 0) {
+        whereClauses.push(`dg.group_id = ANY($${idx})`);
+        values.push(groups);
+        idx++;
+      }
+
+      if (startDate) {
+        whereClauses.push(`e.date >= $${idx}::date`);
+        values.push(startDate);
+        idx++;
+      }
+
+      if (endDate) {
+        whereClauses.push(`e.date <= $${idx}::date`);
+        values.push(endDate);
+        idx++;
+      }
+
+      const whereSQL = `WHERE ${whereClauses.join(' AND ')}`;
+
+      const querySQL = `
+        SELECT DISTINCT e.document_id, e.date, e.description, d.sourceurl
+        FROM event e
+        JOIN document d ON e.document_id = d.document_id
+        LEFT JOIN document_person dp ON d.document_id = dp.document_id
+        LEFT JOIN document_organization dorg ON d.document_id = dorg.document_id
+        LEFT JOIN document_group dg ON d.document_id = dg.document_id
+        ${whereSQL}
+        ORDER BY e.date ASC;
+      `;
+
+      const result = await pool.query(querySQL, values);
+
+      return result.rows.map(event => ({
+        document: {
+          document_id: event.document_id,
+          sourceurl: event.sourceurl,
+        },
+        date: event.date,
+        description: event.description,
+      }));
+    },
 
     documents: () => [],
     dossier: () => null,

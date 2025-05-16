@@ -8,7 +8,7 @@ export const typeDefs = gql`
     date_published: String
     date_decision: String
     document_count: Int
-    sourceURL: String
+    sourceurl: String
     responsible_ministry: String
     subject: String
     documents: [Document!]!  # Relatie naar Documenten
@@ -94,11 +94,13 @@ export const typeDefs = gql`
     topics: [Topic!]!
     topEntitiesByTopic(topic_id: ID!): TopEntities!
     getTimelineForTopic(
-    topic_id: ID!,
-    persons: [String!],
-    organizations: [String!],
-    groups: [String!],
-    startDate: String,
-    endDate: String
-  ): [Event!]!  }
+      topic_id: ID!,
+      persons: [String!],
+      organizations: [String!],
+      groups: [String!],
+      startDate: String,
+      endDate: String): [Event!]!
+    searchDocuments(query: String!): [Document!]!
+    getTimelineForQuery(query: String!): [Event!]!
+}
 `;

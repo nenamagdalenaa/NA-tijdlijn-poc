@@ -33,6 +33,11 @@ export default function RootLayout({
                     Tijdlijnen
                   </Link>
                 </li>
+                <li>
+                  <Link href="/documents" className="font-bold text-xl hover:text-black">
+                    Documenten
+                  </Link>
+                </li>
               </ul>
             </nav>
           </header>

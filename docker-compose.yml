@@ -1,23 +1,30 @@
 services:
   db:
-    image: postgres:16
+    build:
+      context: .
+      dockerfile: Dockerfile.pgvector
     environment:
       POSTGRES_USER: readonly_user
       POSTGRES_PASSWORD: alleenlezen123
       POSTGRES_DB: db_covid
     volumes:
       - ./db_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5433:5432"
 
   backend:
     build: ./back-end
+    volumes:
+      - ./back-end:/app
+    working_dir: /app
     depends_on:
       - db
     environment:
       DATABASE_URL: postgres://readonly_user:alleenlezen123@db:5432/db_covid
     ports:
       - "4000:4000"
+    command: npm run dev
 
   # frontend:
   #   build: ./front-end
