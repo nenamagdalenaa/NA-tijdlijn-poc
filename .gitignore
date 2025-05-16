@@ -19,3 +19,5 @@ db_data.tar.gz
 .next
 out
 *.log
+
+db_backup.tar.gz
