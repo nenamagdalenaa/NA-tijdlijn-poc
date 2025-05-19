@@ -3,38 +3,7 @@ import React from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery, gql } from '@apollo/client';
 import TopicView from '@/components/topics/TopicView';
-
-
-const GET_TOPIC_BY_ID = gql`
-  query GetTopicById($id: ID!) {
-    topic(id: $id) {
-      name
-      summary
-    }
-  }
-`;
-
-const GET_TOP_ENTITIES_BY_TOPIC = gql`
-  query GetTopEntitiesByTopic($topic_id: ID!) {
-    topEntitiesByTopic(topic_id: $topic_id) {
-      persons {
-        id
-        name
-        count
-      }
-      organizations {
-        id
-        name
-        count
-      }
-      groups {
-        id
-        name
-        count
-      }
-    }
-  }
-`;
+import { GET_TOP_ENTITIES_BY_TOPIC, GET_TOPIC_BY_ID } from '../../../graphql/queries/queries';
 
 const TopicPage = () => {
   const params = useParams();

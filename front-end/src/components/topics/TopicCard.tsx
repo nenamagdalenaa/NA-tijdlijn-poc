@@ -2,12 +2,11 @@ import Link from 'next/link';
 import React from 'react';
 
 interface TopicCardProps {
-    topic_id: string;
+    topic_id: string
     name: string;
-    summary: string;
 }
 
-const TopicCard: React.FC<TopicCardProps> = ({ topic_id, name, summary }) => {
+export default function TopicCard({ topic_id, name }: TopicCardProps) {
     return (
         <Link href={`/topics/${topic_id}`}>
             <div className="topic-card h-full w-130 bg-white shadow-[0_0_10px_rgba(0,0,0,0.25)] rounded-lg p-4 flex text-center flex-col gap-2 text-wrap hover:bg-[#e6effa] transition duration-300 ease-in-out">
@@ -16,5 +15,3 @@ const TopicCard: React.FC<TopicCardProps> = ({ topic_id, name, summary }) => {
         </Link>
     );
 };
-
-export default TopicCard;

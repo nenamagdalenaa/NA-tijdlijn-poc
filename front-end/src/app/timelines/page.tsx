@@ -3,53 +3,7 @@ import TimelineCard from "@/components/timeline/TimelineCard";
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import React, { useMemo, useState } from "react";
 import Filter from "@/components/filter/Filter";
-
-const GET_TIMELINE_BY_QUERY = gql`
-  query GetTimelineForQuery($query: String!) {
-    getTimelineForQuery(query: $query) {
-      document {
-        document_id
-        sourceurl
-        persons {
-          person_id
-          name
-        }
-        organizations {
-          organization_id
-          name
-        }
-        groups {
-          group_id
-          name
-        }
-      }
-      date
-      description
-    }
-  }
-`;
-
-const GET_TOP_ENTITIES = gql`
-  query {
-    topEntities {
-      persons {
-        id
-        name
-        count
-      }
-      organizations {
-        id
-        name
-        count
-      }
-      groups {
-        id
-        name
-        count
-      }
-    }
-  }
-`;
+import { GET_TOP_ENTITIES, GET_TIMELINE_BY_SEARCH } from '../../graphql/queries/queries';
 
 export default function Timelines() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,7 +16,7 @@ export default function Timelines() {
   const [endDate, setEndDate] = useState<string | null>(null);
 
   // Queries
-  const [searchTimeline, { loading, data, error }] = useLazyQuery(GET_TIMELINE_BY_QUERY);
+  const [searchTimeline, { loading, data, error }] = useLazyQuery(GET_TIMELINE_BY_SEARCH);
   const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_TOP_ENTITIES);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -121,7 +75,7 @@ export default function Timelines() {
           </button>
         </form>
 
-        {loading && <p className="mt-4">Laden...</p>}
+        {loading && <p className="mt-4">Tijdlijn laden...</p>}
         {error && <p className="mt-4 text-red-600">Fout: {error.message}</p>}
 
         <div className="flex flex-row gap-4 flex-1 overflow-y-auto">
@@ -132,6 +86,7 @@ export default function Timelines() {
                   persons={entitiesData.topEntities.persons}
                   organizations={entitiesData.topEntities.organizations}
                   groups={entitiesData.topEntities.groups}
+                  showDateRange={true}
                   onFilterChange={({ persons, organizations, groups, dateRange }) => {
                     setSelectedPersons(persons);
                     setSelectedOrganizations(organizations);

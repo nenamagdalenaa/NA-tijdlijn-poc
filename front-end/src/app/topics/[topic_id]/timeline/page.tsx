@@ -1,63 +1,10 @@
 "use client";
-
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { useQuery, gql } from "@apollo/client";
 import TimelineCard from "@/components/timeline/TimelineCard";
 import Filter from "@/components/filter/Filter";
-
-const GET_TOPIC_BY_ID = gql`
-  query GetTopicById($id: ID!) {
-    topic(id: $id) {
-      name    }
-  }
-`;
-
-const GET_TIMELINE = gql`
-  query GetTimelineForTopic(
-  $topic_id: ID!,
-  $persons: [String!],
-  $organizations: [String!],
-  $groups: [String!],
-  $startDate: String,
-  $endDate: String
-) {
-  getTimelineForTopic(
-    topic_id: $topic_id,
-    persons: $persons,
-    organizations: $organizations,
-    groups: $groups,
-    startDate: $startDate,
-    endDate: $endDate
-  ) {
-    document {
-      document_id
-      sourceurl
-    }
-    date
-    description
-  }
-}
-`;
-
-const GET_TOP_ENTITIES_BY_TOPIC = gql`
-  query GetTopEntitiesByTopic($topic_id: ID!) {
-    topEntitiesByTopic(topic_id: $topic_id) {
-      persons {
-        id
-        name
-      }
-      organizations {
-        id
-        name
-      }
-      groups {
-        id
-        name
-      }
-    }
-  }
-`;
+import { GET_TOPIC_BY_ID, GET_TOP_ENTITIES_BY_TOPIC, GET_TIMELINE_BY_TOPIC_ID } from "../../../../graphql/queries/queries";
 
 const TimelinePage = () => {
   const params = useParams();
@@ -71,7 +18,7 @@ const TimelinePage = () => {
   const [endDate, setEndDate] = useState<string | null>(null);
 
   // Query met filters
-  const { data: timelineData, loading: timelineLoading, error: timelineError, refetch } = useQuery(GET_TIMELINE, {
+  const { data: timelineData, loading: timelineLoading, error: timelineError, refetch } = useQuery(GET_TIMELINE_BY_TOPIC_ID, {
     variables: {
       topic_id,
       persons: selectedPersons.length > 0 ? selectedPersons : null,

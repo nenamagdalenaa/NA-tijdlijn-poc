@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import DateRangeFilter from './DateFilter';
 
-
 type FilterProps = {
     persons?: Array<{ id: string; name: string; }>;
     organizations?: Array<{ id: string; name: string; }>;

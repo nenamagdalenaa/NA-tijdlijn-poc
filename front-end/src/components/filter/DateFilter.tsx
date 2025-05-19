@@ -8,7 +8,7 @@ type DateProps = {
     onChange: (range: { from: Date | null; to: Date | null }) => void;
 };
 
-const DateRangeFilter: React.FC<DateProps> = ({ from, to, onChange }) => {
+export default function DateRangeFilter({ from, to, onChange }: DateProps) {
     return (
         <div className="flex gap-4 items-center">
             <div className="flex flex-col">
@@ -48,5 +48,3 @@ const DateRangeFilter: React.FC<DateProps> = ({ from, to, onChange }) => {
         </div>
     );
 };
-
-export default DateRangeFilter;

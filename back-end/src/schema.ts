@@ -83,28 +83,30 @@ export const typeDefs = gql`
 }
 
   # Query type
-  type Query {
-    documents: [Document!]!
-    dossier(dossier_id: String!): Dossier
-    events(document_id: String!): [Event!]!
-    groups: [Group!]!
-    organizations: [Organization!]!
-    people: [Person!]!
-    topic(id: ID!): Topic    
-    topics: [Topic!]!
-    topEntitiesByTopic(topic_id: ID!): TopEntities!
-    getTimelineForTopic(
-      topic_id: ID!,
-      persons: [String!],
-      organizations: [String!],
-      groups: [String!],
-      startDate: String,
-      endDate: String): [Event!]!
-    searchDocuments(query: String!): [Document!]!
-    getTimelineForQuery(query: String!): [Event!]!
-    getPersonsByDocumentId(document_id: ID!): [Person!]!
-    getOrganizationsByDocumentId(document_id: ID!): [Organization!]!
-    getGroupsByDocumentId(document_id: ID!): [Group!]!
-    topEntities: TopEntities!
+type Query {
+  documents: [Document!]!
+  dossier(dossierId: String!): Dossier
+  events(documentId: String!): [Event!]!
+  groups: [Group!]!
+  organizations: [Organization!]!
+  people: [Person!]!
+  topic(id: ID!): Topic    
+  topics: [Topic!]!
+  topEntitiesByTopic(topicId: ID!): TopEntities!
+  getTimelineByTopic(
+    topicId: ID!,
+    persons: [String!],
+    organizations: [String!],
+    groups: [String!],
+    startDate: String,
+    endDate: String
+  ): [Event!]!
+  searchDocuments(query: String!): [Document!]!
+  getTimelineBySearch(query: String!): [Event!]!
+  getPersonsByDocumentId(documentId: ID!): [Person!]!
+  getOrganizationsByDocumentId(documentId: ID!): [Organization!]!
+  getGroupsByDocumentId(documentId: ID!): [Group!]!
+  topEntities: TopEntities!
 }
+
 `;

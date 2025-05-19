@@ -1,26 +1,17 @@
 import React from "react";
+import { Document } from "@/graphql/generated/graphql";
 
-type Dossier = {
-  dossier_id: string;
-  title: string;
-  sourceurl?: string;
-};
+interface DocumentCardProps {
+  document: Document;
+}
 
-type Document = {
-  document_id: string;
-  title: string;
-  summary: string;
-  sourceurl: string;
-  dossier?: Dossier | null;
-};
-
-const DocumentCard: React.FC<{ doc: Document }> = ({ doc }) => {
+export default function DocumentCard({ document }: DocumentCardProps) {
   return (
     <div className="bg-[#e6effa] p-4 rounded-md shadow mb-4">
-      <h2 className="font-bold text-xl">{doc.title}</h2>
-      <p className="text-gray-600 italic">{doc.summary}</p>
+      <h2 className="font-bold text-xl">{document.title}</h2>
+      <p className="text-gray-600 italic">{document.summary}</p>
       <a
-        href={doc.sourceurl}
+        href={document.sourceurl ?? ''}
         className="text-blue-500 underline"
         target="_blank"
         rel="noopener noreferrer"
@@ -28,12 +19,12 @@ const DocumentCard: React.FC<{ doc: Document }> = ({ doc }) => {
         Bekijk document
       </a>
 
-      {doc.dossier && (
+      {document.dossier && (
         <div className="mt-2 text-sm text-gray-700">
-          <p>Afkomstig uit dossier: {doc.dossier.title}</p>
-          {doc.dossier.sourceurl && (
+          <p>Afkomstig uit dossier: {document.dossier.title}</p>
+          {document.dossier.sourceurl && (
             <a
-              href={doc.dossier.sourceurl}
+              href={document.dossier.sourceurl}
               className="text-blue-400 underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -46,5 +37,3 @@ const DocumentCard: React.FC<{ doc: Document }> = ({ doc }) => {
     </div>
   );
 };
-
-export default DocumentCard;

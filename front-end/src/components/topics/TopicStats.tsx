@@ -1,18 +1,13 @@
 import React from 'react';
-
-interface Entity {
-  id: string | null;
-  name: string;
-  count: number;
-}
+import { EntityCount } from '@/graphql/generated/graphql';
 
 interface TopicStatsProps {
-  persons?: Entity[];
-  organizations?: Entity[];
-  groups?: Entity[];
+  persons?: EntityCount[];
+  organizations?: EntityCount[];
+  groups?: EntityCount[];
 }
 
-const TopicStats: React.FC<TopicStatsProps> = ({ persons, organizations, groups }) => {
+export default function TopicStats({ persons, organizations, groups }: TopicStatsProps) {
   return (
     <div className="m-4 p-6 bg-[#e6effa] rounded-lg shadow-md text-left">
       <h2 className="font-bold text-2xl mb-6">Top Entiteiten</h2>
@@ -58,5 +53,3 @@ const TopicStats: React.FC<TopicStatsProps> = ({ persons, organizations, groups 
     </div>
   );
 };
-
-export default TopicStats;

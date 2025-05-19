@@ -3,53 +3,7 @@ import DocumentCard from "@/components/documents/DocumentCard";
 import Filter from "@/components/filter/Filter";
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import React, { useMemo, useState } from "react";
-
-const SEARCH_DOCUMENTS = gql`
-  query SearchDocuments($searchQuery: String!) {
-    searchDocuments(query: $searchQuery) {
-      document_id
-      title
-      summary
-      sourceurl
-      dossier {
-        dossier_id
-        title
-        sourceurl
-      }
-      persons {
-        person_id
-      }
-      organizations {
-        organization_id
-      }
-      groups {
-        group_id
-      }
-    }
-  }
-`;
-
-const GET_TOP_ENTITIES = gql`
-  query {
-    topEntities {
-      persons {
-        id
-        name
-        count
-      }
-      organizations {
-        id
-        name
-        count
-      }
-      groups {
-        id
-        name
-        count
-      }
-    }
-  }
-`;
+import { GET_TOP_ENTITIES, GET_DOCUMENTS_BY_QUERY } from "../../graphql/queries/queries";
 
 export default function Documents() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,7 +14,7 @@ export default function Documents() {
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 
   // Queries
-  const [searchDocuments, { loading, data, error }] = useLazyQuery(SEARCH_DOCUMENTS);
+  const [searchDocuments, { loading, data, error }] = useLazyQuery(GET_DOCUMENTS_BY_QUERY);
   const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_TOP_ENTITIES);
 
   const searchResults = data?.searchDocuments ?? [];
@@ -107,7 +61,7 @@ export default function Documents() {
           </button>
         </form>
 
-        {loading && <p className="mt-4">Laden...</p>}
+        {loading && <p className="mt-4">Documenten laden...</p>}
         {error && <p className="mt-4 text-red-600">Fout: {error.message}</p>}
 
         {entitiesData && filteredDocuments.length > 0 && (
