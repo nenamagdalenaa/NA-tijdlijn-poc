@@ -21,26 +21,24 @@ Een optionele React frontend is voorbereid, maar nog niet geactiveerd.
 Deze repository bevat het grote databasebestand niet i.v.m. GitHub-beperkingen.
 
 1. Download handmatig het volgende zip-bestand:
-   - [`db_data.tar.gz`](https://drive.google.com/file/d/1iGdErddPQ2GCjm2IW0qRRiJgGxOukshA/view?usp=sharing)
+   - [`backup.tar.gz`](https://drive.google.com/file/d/1iGdErddPQ2GCjm2IW0qRRiJgGxOukshA/view?usp=sharing)
 
 2. Run de volgende commands in de terminal in de root van het project
 
 ```bash
-mkdir db_data
 
-tar -xzf db_data.tar.gz -C db_data
+tar -xzf backup.tar.gz
 ```
 
 ### 🧯 Windows-gebruikers
 
-Je kunt `db_data.tar.gz` uitpakken met:
+Je kunt `backup.tar.gz` uitpakken met:
 
 - [7-Zip](https://www.7-zip.org/)
 - Of via WSL (Windows Subsystem for Linux):
 
 ```bash
-mkdir db_data
-tar -xzf db_data.tar.gz -C db_data
+tar -xzf backup.tar.gz
 ```
 
 ---
