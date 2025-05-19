@@ -1,36 +1,47 @@
-# NA-tijdlijn-poc
+# Proof of Concept Archief Tijdlijnen
 
-Een proof-of-concept project om documenten, dossiers en metadata uit een WOO-dataset te ontsluiten via een GraphQL API met PostgreSQL als databron.  
-Deze backend maakt gebruik van Apollo Server v4 (Node.js + TypeScript) en is eenvoudig op te starten via Docker Compose.  
-Een optionele React frontend is voorbereid, maar nog niet geactiveerd.
+Een Proof of Concept project om documenten, dossiers en metadata uit een Woo-dataset te ontsluiten via een GraphQL API met PostgreSQL als databron. 
+
+- **Databron**: de database is gevuld met 23.000 Woo-stukken van het Ministerie van Volksgezondheid, Welzijn en Sport met betrekking tot **COVID-19**. De documenten zijn gescraped van de website [Open Min VWS](https://open.minvws.nl/thema/covid-19). Het gaat om documenten van grofweg de eerste 9 maanden van de coronacrisis. 
+- **Preprocessing** van de data bestond uit:
+  1. Optical Character Recognition (OCR) om de tekst uit de PDF-bestanden te halen.
+  2. Metadata extractie (d.m.v. Gemini)
+      - Datums
+      - Personen
+      - Ministeries/organisaties/instituten
+      - Bevolkingsgroepen
+      - Samenvatting van documenten
+      - Gebeurtenissen met bijbehorende datums
+- **Topic Modeling (BERTopic)**: hiermee zijn grotere thema's uit de dataset geclusterd om gerichter zoeken te faciliteren. 
 
 ---
 
-## ⚙️ Stack
-
+## Stack
 - **PostgreSQL** — relationele database
+  - Embeddings van de samenvattingen en gebeurtenissen zijn opgeslagen middels [pgvector](https://github.com/pgvector/pgvector) om vector search mogelijk te maken
 - **Node.js + TypeScript** — backend
 - **Apollo Server v4** — GraphQL API
 - **Docker Compose** — om alles samen te draaien
-- **React + Apollo Client** — frontend
+- **Next.js + React + Apollo Client** — frontend
 
 ---
 
-## 📦 Database downloaden & en in project zetten
+## Lokaal opstarten 
 
-Deze repository bevat het grote databasebestand niet i.v.m. GitHub-beperkingen.
+### 1. Database initialiseren
+
+Deze repository bevat het grote databasebestand niet i.v.m. GitHub-beperkingen. Voer de volgende stappen uit om de database gereed te maken.
 
 1. Download handmatig het volgende zip-bestand:
-   - [`backup.tar.gz`](https://drive.google.com/file/d/1iGdErddPQ2GCjm2IW0qRRiJgGxOukshA/view?usp=sharing)
+   - [`backup.tar.gz`](https://drive.google.com/file/d/196vlV4oMzBOSBPj2NSLHCe1KnVZc7yWZ/view?usp=sharing)
 
-2. Run de volgende commands in de terminal in de root van het project
+2. Run het volgende command in de terminal in de root van het project
 
 ```bash
-
 tar -xzf backup.tar.gz
 ```
 
-### 🧯 Windows-gebruikers
+#### Windows-gebruikers
 
 Je kunt `backup.tar.gz` uitpakken met:
 
@@ -41,46 +52,41 @@ Je kunt `backup.tar.gz` uitpakken met:
 tar -xzf backup.tar.gz
 ```
 
----
+Docker zal de data vervolgens automatisch inladen bij het starten.
 
-Docker zal deze automatisch inladen bij het starten.
 
----
+### 2. Docker
 
-## 🚀 Project starten met Docker
-
-### 📋 Vereisten
+#### Vereisten
 
 - [Docker](https://www.docker.com/products/docker-desktop/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
-### ▶️ Starten
+#### Starten
 
 In de root:
 
 ```bash
 docker-compose up --build
 ```
+De images worden gebouwd en de containers worden gestart. Dit kan een tijdje duren.
 
+##### Vervolgens is de UI beschikbaar op: `http://localhost:3000/`
 
-## 🧪 Testen van de GraphQL API
+---
+## Testen van de GraphQL API
 
 De API is beschikbaar op: `http://localhost:4000/graphql`
 
 > Let op: dit endpoint accepteert alleen `POST`-requests. Gebruik bijvoorbeeld Postman of Insomnia.
 
+Er is een [Postman collectie]() beschikbaar om de queries te testen.
+
+---
+
 ## Entity Relation Diagram
 
 ![ERD](ERD.png)
 
-### ✅ Voorbeeldquery
-
-```graphql
-query {
-  documents(limit: 5) {
-    document_id
-    title
-    date_scraped
-  }
-}
-```
+---
+## Known impedements & future improvements
