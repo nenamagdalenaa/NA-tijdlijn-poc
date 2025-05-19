@@ -6,10 +6,11 @@ type FilterProps = {
     persons?: Array<{ id: string; name: string; }>;
     organizations?: Array<{ id: string; name: string; }>;
     groups?: Array<{ id: string; name: string; }>;
+    showDateRange?: boolean;
     onFilterChange?: (filters: { persons: string[]; organizations: string[]; groups: string[]; dateRange: { from: Date | null; to: Date | null; }; }) => void;
 };
 
-export default function Filter({ persons, organizations, groups, onFilterChange }: FilterProps) {
+export default function Filter({ persons, organizations, groups, showDateRange, onFilterChange }: FilterProps) {
     const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
     const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([]);
     const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
@@ -86,11 +87,11 @@ export default function Filter({ persons, organizations, groups, onFilterChange 
                 </div>
             ))}
 
-            <h2 className="text-md font-bold mt-2">Datum</h2>
-
-            <div className="mt-2">
-                <DateRangeFilter from={dateRange.from} to={dateRange.to} onChange={setDateRange} />
-            </div>
+            {showDateRange && (
+                <><h2 className="text-md font-bold mt-2">Datum</h2><div className="mt-2">
+                    <DateRangeFilter from={dateRange.from} to={dateRange.to} onChange={setDateRange} />
+                </div></>
+            )}
 
             <button
                 onClick={handleApplyFilters}

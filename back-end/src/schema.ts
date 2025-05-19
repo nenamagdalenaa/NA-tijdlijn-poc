@@ -11,13 +11,13 @@ export const typeDefs = gql`
     sourceurl: String
     responsible_ministry: String
     subject: String
-    documents: [Document!]!  # Relatie naar Documenten
+    documents: [Document!]!
   }
 
   # Document Type
   type Document {
     document_id: String!
-    dossier: Dossier  # Relatie naar Dossier
+    dossier: Dossier
     title: String
     type: String
     sourcetype: String
@@ -26,39 +26,39 @@ export const typeDefs = gql`
     date_extracted: String
     summary: String
     text: String
-    events: [Event!]!  # Relatie naar Events
-    groups: [Group!]!  # Relatie naar Groups
-    organizations: [Organization!]!  # Relatie naar Organizations
-    people: [Person!]!  # Relatie naar People
-    topics: [Topic!]!  # Relatie naar Topics
+    events: [Event!]! 
+    groups: [Group!]!
+    organizations: [Organization!]!
+    persons: [Person!]!
+    topics: [Topic!]!
   }
 
   # Event Type
   type Event {
-    document: Document  # Relatie naar Document
+    document: Document
     date: String
     description: String
   }
 
   # Group Type
   type Group {
-    group_id: String!
+    group_id: ID!
     name: String
-    documents: [Document!]!  # Relatie naar Documents
+    documents: [Document!]!
   }
 
   # Organization Type
   type Organization {
-    organization_id: String!
+    organization_id: ID!
     name: String
-    documents: [Document!]!  # Relatie naar Documents
+    documents: [Document!]!
   }
 
   # Person Type
   type Person {
-    person_id: String!
+    person_id: ID!
     name: String
-    documents: [Document!]!  # Relatie naar Documents
+    documents: [Document!]!
   }
 
   # Topic Type
@@ -67,7 +67,7 @@ export const typeDefs = gql`
     name: String
     top_words: String
     summary: String
-    documents: [Document!]!  # Relatie naar Documents
+    documents: [Document!]!
 }
 
   type TopEntities {
@@ -102,5 +102,9 @@ export const typeDefs = gql`
       endDate: String): [Event!]!
     searchDocuments(query: String!): [Document!]!
     getTimelineForQuery(query: String!): [Event!]!
+    getPersonsByDocumentId(document_id: ID!): [Person!]!
+    getOrganizationsByDocumentId(document_id: ID!): [Organization!]!
+    getGroupsByDocumentId(document_id: ID!): [Group!]!
+    topEntities: TopEntities!
 }
 `;

@@ -16,7 +16,7 @@ type Document = {
 
 const DocumentCard: React.FC<{ doc: Document }> = ({ doc }) => {
   return (
-    <div className="bg-[#e6effa] p-4 rounded-md shadow">
+    <div className="bg-[#e6effa] p-4 rounded-md shadow mb-4">
       <h2 className="font-bold text-xl">{doc.title}</h2>
       <p className="text-gray-600 italic">{doc.summary}</p>
       <a

@@ -20,4 +20,4 @@ db_data.tar.gz
 out
 *.log
 
-db_backup.tar.gz
+backup.tar.gz

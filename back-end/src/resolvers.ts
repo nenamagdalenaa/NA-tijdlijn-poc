@@ -1,5 +1,6 @@
 import { pool } from './db';
 import { spawn } from 'child_process'
+import { Document } from './generated/graphql';
 
 async function getEmbeddingLocally(query: string): Promise<number[]> {
   return new Promise((resolve, reject) => {
@@ -38,6 +39,53 @@ export const resolvers = {
         [args.id]
       );
       return result.rows[0] || null;
+    },
+
+    topEntities: async () => {
+      const personsRes = await pool.query(`
+    SELECT p.person_id, p.name, COUNT(*) AS count
+    FROM person p
+    JOIN document_person dp ON p.person_id = dp.person_id
+    GROUP BY p.person_id, p.name
+    ORDER BY count DESC
+    LIMIT 6
+  `);
+
+      const orgRes = await pool.query(`
+    SELECT o.organization_id, o.name, COUNT(*) AS count
+    FROM organization o
+    JOIN document_organization dorg ON o.organization_id = dorg.organization_id
+    GROUP BY o.organization_id, o.name
+    ORDER BY count DESC
+    LIMIT 6
+  `);
+
+      const groupRes = await pool.query(`
+    SELECT g.group_id, g.name, COUNT(*) AS count
+    FROM "Group" g
+    JOIN document_group dg ON g.group_id = dg.group_id
+    GROUP BY g.group_id, g.name
+    ORDER BY count DESC
+    LIMIT 6
+  `);
+
+      return {
+        persons: personsRes.rows.map(row => ({
+          id: row.person_id,
+          name: row.name,
+          count: parseInt(row.count),
+        })),
+        organizations: orgRes.rows.map(row => ({
+          id: row.organization_id,
+          name: row.name,
+          count: parseInt(row.count),
+        })),
+        groups: groupRes.rows.map(row => ({
+          id: row.group_id,
+          name: row.name,
+          count: parseInt(row.count),
+        })),
+      };
     },
 
     topEntitiesByTopic: async (_: any, { topic_id }: { topic_id: string }) => {
@@ -191,7 +239,7 @@ export const resolvers = {
         dos."sourceurl" AS dossier_sourceurl
         FROM document d
         LEFT JOIN dossier dos ON d.dossier_id = dos.dossier_id
-        WHERE d.embedding <=> $1::vector < 0.3
+        WHERE d.embedding <=> $1::vector < 0.2
         ORDER BY d.embedding <=> $1::vector;`,
         [embeddingLiteral]
       )
@@ -204,7 +252,7 @@ export const resolvers = {
         dossier: row.dossier_id && {
           dossier_id: row.dossier_id,
           title: row.dossier_title,
-          sourceURL: row.dossier_sourceurl,
+          sourceurl: row.dossier_sourceurl,
         },
       }))
     },
@@ -295,5 +343,43 @@ export const resolvers = {
     groups: () => [],
     organizations: () => [],
     people: () => [],
+  },
+  Document: {
+    persons: async (parent: Document) => {
+      const result = await pool.query(
+        `SELECT p.person_id, p.name
+         FROM person p
+         JOIN document_person dp ON p.person_id = dp.person_id
+         WHERE dp.document_id = $1`,
+        [parent.document_id]
+      );
+      return result.rows.map(row => ({ person_id: row.person_id, name: row.name }));
+    },
+    organizations: async (parent: Document) => {
+      const result = await pool.query(
+        `SELECT o.organization_id, o.name
+        FROM organization o
+        JOIN document_organization dorg ON o.organization_id = dorg.organization_id
+        WHERE dorg.document_id = $1`,
+        [parent.document_id]
+      );
+
+      return result.rows
+        .filter(row => row.organization_id !== null) // voeg dit toe
+        .map(row => ({
+          organization_id: row.organization_id,
+          name: row.name
+        }));
+    },
+    groups: async (parent: Document) => {
+      const result = await pool.query(
+        `SELECT g.group_id, g.name
+         FROM "Group" g
+         JOIN document_group dg ON g.group_id = dg.group_id
+         WHERE dg.document_id = $1`,
+        [parent.document_id]
+      );
+      return result.rows.map(row => ({ group_id: row.group_id, name: row.name }));
+    },
   },
 };
