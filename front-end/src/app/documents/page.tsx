@@ -3,7 +3,7 @@ import DocumentCard from "@/components/documents/DocumentCard";
 import Filter from "@/components/filter/Filter";
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import React, { useMemo, useState } from "react";
-import { GET_TOP_ENTITIES, GET_DOCUMENTS_BY_QUERY } from "../../graphql/queries/queries";
+import { GET_TOP_ENTITIES, SEARCH_DOCUMENTS } from "../../graphql/queries/queries";
 
 export default function Documents() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,7 +14,7 @@ export default function Documents() {
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 
   // Queries
-  const [searchDocuments, { loading, data, error }] = useLazyQuery(GET_DOCUMENTS_BY_QUERY);
+  const [searchDocuments, { loading, data, error }] = useLazyQuery(SEARCH_DOCUMENTS);
   const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_TOP_ENTITIES);
 
   const searchResults = data?.searchDocuments ?? [];
@@ -82,7 +82,7 @@ export default function Documents() {
 
             <div className="flex-1 overflow-y-auto bg-white">
               {filteredDocuments.map((doc: any) => (
-                <DocumentCard key={doc.document_id} doc={doc} />
+                <DocumentCard key={doc.document_id} document={doc} />
               ))}
             </div>
           </div>

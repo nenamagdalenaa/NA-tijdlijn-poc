@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useQuery, gql } from "@apollo/client";
 import TimelineCard from "@/components/timeline/TimelineCard";
 import Filter from "@/components/filter/Filter";
-import { GET_TOPIC_BY_ID, GET_TOP_ENTITIES_BY_TOPIC, GET_TIMELINE_BY_TOPIC_ID } from "../../../../graphql/queries/queries";
+import { GET_TOPIC, GET_ENTITIES_BY_TOPIC, GET_TIMELINE_BY_TOPIC } from "../../../../graphql/queries/queries";
 
 const TimelinePage = () => {
   const params = useParams();
@@ -18,7 +18,7 @@ const TimelinePage = () => {
   const [endDate, setEndDate] = useState<string | null>(null);
 
   // Query met filters
-  const { data: timelineData, loading: timelineLoading, error: timelineError, refetch } = useQuery(GET_TIMELINE_BY_TOPIC_ID, {
+  const { data: timelineData, loading: timelineLoading, error: timelineError, refetch } = useQuery(GET_TIMELINE_BY_TOPIC, {
     variables: {
       topic_id,
       persons: selectedPersons.length > 0 ? selectedPersons : null,
@@ -31,12 +31,12 @@ const TimelinePage = () => {
   });
 
   // Topic en entities
-  const { data: topicData, loading: topicLoading, error: topicError } = useQuery(GET_TOPIC_BY_ID, {
+  const { data: topicData, loading: topicLoading, error: topicError } = useQuery(GET_TOPIC, {
     variables: { id: topic_id },
     skip: !topic_id,
   });
 
-  const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_TOP_ENTITIES_BY_TOPIC, {
+  const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_ENTITIES_BY_TOPIC, {
     variables: { topic_id },
     skip: !topic_id,
   });

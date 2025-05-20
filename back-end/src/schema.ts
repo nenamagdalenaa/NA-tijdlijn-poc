@@ -3,27 +3,27 @@ import { gql } from 'graphql-tag';
 export const typeDefs = gql`
   # Dossier Type
   type Dossier {
-    dossier_id: String!
+    dossierId: String!
     title: String
-    date_published: String
-    date_decision: String
-    document_count: Int
-    sourceurl: String
-    responsible_ministry: String
+    publishedDate: String
+    decisionDate: String
+    documentCount: Int
+    sourceUrl: String
+    responsibleMinistry: String
     subject: String
     documents: [Document!]!
   }
 
   # Document Type
   type Document {
-    document_id: String!
+    documentId: String!
     dossier: Dossier
     title: String
     type: String
     sourcetype: String
-    date_scraped: String
-    sourceurl: String
-    date_extracted: String
+    scrapedDate: String
+    sourceUrl: String
+    extractedDate: String
     summary: String
     text: String
     events: [Event!]! 
@@ -42,30 +42,30 @@ export const typeDefs = gql`
 
   # Group Type
   type Group {
-    group_id: ID!
+    groupId: ID!
     name: String
     documents: [Document!]!
   }
 
   # Organization Type
   type Organization {
-    organization_id: ID!
+    organizationId: ID!
     name: String
     documents: [Document!]!
   }
 
   # Person Type
   type Person {
-    person_id: ID!
+    personId: ID!
     name: String
     documents: [Document!]!
   }
 
   # Topic Type
   type Topic {
-    topic_id: String!
+    topicId: ID!
     name: String
-    top_words: String
+    topWords: String
     summary: String
     documents: [Document!]!
 }
@@ -77,7 +77,7 @@ export const typeDefs = gql`
 }
 
   type EntityCount {
-    id: String
+    entityId: String
     name: String
     count: Int!
 }
@@ -90,9 +90,10 @@ type Query {
   groups: [Group!]!
   organizations: [Organization!]!
   people: [Person!]!
-  topic(id: ID!): Topic    
+  topic(topicId: ID!): Topic    
   topics: [Topic!]!
   topEntitiesByTopic(topicId: ID!): TopEntities!
+  topEntities: TopEntities!
   getTimelineByTopic(
     topicId: ID!,
     persons: [String!],
@@ -102,11 +103,10 @@ type Query {
     endDate: String
   ): [Event!]!
   searchDocuments(query: String!): [Document!]!
-  getTimelineBySearch(query: String!): [Event!]!
+  getTimelineByQuery(query: String!): [Event!]!
   getPersonsByDocumentId(documentId: ID!): [Person!]!
   getOrganizationsByDocumentId(documentId: ID!): [Organization!]!
   getGroupsByDocumentId(documentId: ID!): [Group!]!
-  topEntities: TopEntities!
 }
 
 `;

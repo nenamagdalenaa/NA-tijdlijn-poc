@@ -3,7 +3,7 @@ import React from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery, gql } from '@apollo/client';
 import TopicView from '@/components/topics/TopicView';
-import { GET_TOP_ENTITIES_BY_TOPIC, GET_TOPIC_BY_ID } from '../../../graphql/queries/queries';
+import { GET_ENTITIES_BY_TOPIC, GET_TOPIC } from '../../../graphql/queries/queries';
 
 const TopicPage = () => {
   const params = useParams();
@@ -11,12 +11,12 @@ const TopicPage = () => {
 
   if (!topic_id) return <div>Loading topic...</div>;
 
-  const { data: topicData, loading: topicLoading, error: topicError } = useQuery(GET_TOPIC_BY_ID, {
+  const { data: topicData, loading: topicLoading, error: topicError } = useQuery(GET_TOPIC, {
     variables: { id: topic_id },
     skip: !topic_id,
   });
 
-  const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_TOP_ENTITIES_BY_TOPIC, {
+  const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_ENTITIES_BY_TOPIC, {
     variables: { topic_id },
     skip: !topic_id,
   });

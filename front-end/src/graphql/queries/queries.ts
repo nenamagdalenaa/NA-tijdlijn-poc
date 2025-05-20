@@ -4,21 +4,21 @@ import { gql } from "@apollo/client";
 export const GET_TOPICS = gql`
   query GetTopics {
     topics {
-      topic_id
+      topicId
       name
       summary
-      top_words
+      topWords
     }
   }
 `;
 
 export const GET_TOPIC = gql`
-  query GetTopic($id: ID!) {
-    topic(id: $id) {
-      topic_id
+  query GetTopic($topicId: ID!) {
+    topic(topicId: $topicId) {
+      topicId
       name
       summary
-      top_words
+      topWords
     }
   }
 `;
@@ -50,15 +50,15 @@ export const GET_ENTITIES_BY_TOPIC = gql`
   query GetEntitiesByTopic($topicId: ID!) {
     topEntitiesByTopic(topicId: $topicId) {
       persons {
-        id
+        entityId
         name
       }
       organizations {
-        id
+        entityId
         name
       }
       groups {
-        id
+        entityId
         name
       }
     }
@@ -84,8 +84,8 @@ export const GET_TIMELINE_BY_TOPIC = gql`
       endDate: $endDate
     ) {
       document {
-        document_id
-        sourceurl
+        documentId
+        sourceUrl
       }
       date
       description
@@ -95,21 +95,21 @@ export const GET_TIMELINE_BY_TOPIC = gql`
 
 
 export const GET_TIMELINE_BY_SEARCH = gql`
-  query GetTimelineBySearch($query: String!) {
-    getTimelineBySearch(query: $query) {
+  query GetTimelineByQuery($query: String!) {
+    getTimelineByQuery(query: $query) {
       document {
-        document_id
+        documentId
         sourceurl
         persons {
-          person_id
+          personId
           name
         }
         organizations {
-          organization_id
+          organizationId
           name
         }
         groups {
-          group_id
+          groupId
           name
         }
       }
@@ -119,28 +119,28 @@ export const GET_TIMELINE_BY_SEARCH = gql`
   }
 `;
 
-
 // Documents
+
 export const SEARCH_DOCUMENTS = gql`
   query SearchDocuments($query: String!) {
     searchDocuments(query: $query) {
-      document_id
+      documentId
       title
       summary
-      sourceurl
+      sourceUrl
       dossier {
-        dossier_id
+        dossierId
         title
-        sourceurl
+        sourceUrl
       }
       persons {
-        person_id
+        personId
       }
       organizations {
-        organization_id
+        organizationId
       }
       groups {
-        group_id
+        groupId
       }
     }
   }

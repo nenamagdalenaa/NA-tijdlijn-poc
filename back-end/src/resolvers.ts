@@ -33,10 +33,10 @@ export const resolvers = {
       return result.rows;
     },
 
-    topic: async (_: any, args: { id: string }) => {
+    topic: async (_: any, args: { topicId: string }) => {
       const result = await pool.query(
         'SELECT topic_id, name, summary, top_words FROM topic WHERE topic_id = $1',
-        [args.id]
+        [args.topicId]
       );
       return result.rows[0] || null;
     },
@@ -71,24 +71,24 @@ export const resolvers = {
 
       return {
         persons: personsRes.rows.map(row => ({
-          id: row.person_id,
+          entityId: row.person_id,
           name: row.name,
           count: parseInt(row.count),
         })),
         organizations: orgRes.rows.map(row => ({
-          id: row.organization_id,
+          entityId: row.organization_id,
           name: row.name,
           count: parseInt(row.count),
         })),
         groups: groupRes.rows.map(row => ({
-          id: row.group_id,
+          entityId: row.group_id,
           name: row.name,
           count: parseInt(row.count),
         })),
       };
     },
 
-    topEntitiesByTopic: async (_: any, { topic_id }: { topic_id: string }) => {
+    topEntitiesByTopic: async (_: any, { topicId }: { topicId: string }) => {
       const personsRes = await pool.query(`
         SELECT p.person_id, p.name, COUNT(*) AS count
         FROM person p
@@ -98,7 +98,7 @@ export const resolvers = {
         GROUP BY p.person_id, p.name
         ORDER BY count DESC
         LIMIT 6
-      `, [topic_id]);
+      `, [topicId]);
 
       const orgRes = await pool.query(`
         SELECT o.organization_id, o.name, COUNT(*) AS count
@@ -109,7 +109,7 @@ export const resolvers = {
         GROUP BY o.organization_id, o.name
         ORDER BY count DESC
         LIMIT 6
-      `, [topic_id]);
+      `, [topicId]);
 
       const groupRes = await pool.query(`
         SELECT g.group_id, g.name, COUNT(*) AS count
@@ -120,38 +120,38 @@ export const resolvers = {
         GROUP BY g.group_id, g.name
         ORDER BY count DESC
         LIMIT 6
-      `, [topic_id]);
+      `, [topicId]);
 
       return {
         persons: personsRes.rows.map(row => ({
-          id: row.person_id,
+          entityId: row.person_id,
           name: row.name,
           count: parseInt(row.count),
         })),
         organizations: orgRes.rows.map(row => ({
-          id: row.organization_id,
+          entityId: row.organization_id,
           name: row.name,
           count: parseInt(row.count),
         })),
         groups: groupRes.rows.map(row => ({
-          id: row.group_id,
+          entityId: row.group_id,
           name: row.name,
           count: parseInt(row.count),
         })),
       };
     },
 
-    getTimelineForTopic: async (
+    getTimelineByTopic: async (
       _: any,
       {
-        topic_id,
+        topicId,
         persons,
         organizations,
         groups,
         startDate,
         endDate,
       }: {
-        topic_id: string;
+        topicId: string;
         persons: string[] | null;
         organizations: string[] | null;
         groups: string[] | null;
@@ -165,7 +165,7 @@ export const resolvers = {
       let idx = 1;
 
       whereClauses.push(`dt.topic_id = $${idx}`);
-      values.push(topic_id);
+      values.push(topicId);
       idx++;
 
       if (persons && persons.length > 0) {
@@ -216,8 +216,8 @@ export const resolvers = {
 
       return result.rows.map(event => ({
         document: {
-          document_id: event.document_id,
-          sourceurl: event.sourceurl,
+          documentId: event.document_id,
+          sourceUrl: event.sourceurl,
         },
         date: event.date,
         description: event.description,
@@ -245,19 +245,19 @@ export const resolvers = {
       )
 
       return result.rows.map(row => ({
-        document_id: row.document_id,
+        documentId: row.document_id,
         title: row.title,
         summary: row.summary,
-        sourceurl: row.sourceurl,
+        sourceUrl: row.sourceurl,
         dossier: row.dossier_id && {
-          dossier_id: row.dossier_id,
+          dossierId: row.dossier_id,
           title: row.dossier_title,
-          sourceurl: row.dossier_sourceurl,
+          sourceUrl: row.dossier_sourceurl,
         },
       }))
     },
 
-    getTimelineForQuery: async (
+    getTimelineByQuery: async (
       _: any,
       {
         query,
@@ -329,8 +329,8 @@ export const resolvers = {
 
       return result.rows.map(event => ({
         document: {
-          document_id: event.document_id,
-          sourceurl: event.sourceurl,
+          documentId: event.document_id,
+          sourceUrl: event.sourceurl,
         },
         date: event.date,
         description: event.description,
@@ -351,9 +351,9 @@ export const resolvers = {
          FROM person p
          JOIN document_person dp ON p.person_id = dp.person_id
          WHERE dp.document_id = $1`,
-        [parent.document_id]
+        [parent.documentId]
       );
-      return result.rows.map(row => ({ person_id: row.person_id, name: row.name }));
+      return result.rows.map(row => ({ personId: row.person_id, name: row.name }));
     },
     organizations: async (parent: Document) => {
       const result = await pool.query(
@@ -361,13 +361,13 @@ export const resolvers = {
         FROM organization o
         JOIN document_organization dorg ON o.organization_id = dorg.organization_id
         WHERE dorg.document_id = $1`,
-        [parent.document_id]
+        [parent.documentId]
       );
 
       return result.rows
         .filter(row => row.organization_id !== null) // voeg dit toe
         .map(row => ({
-          organization_id: row.organization_id,
+          organizationId: row.organization_id,
           name: row.name
         }));
     },
@@ -377,9 +377,9 @@ export const resolvers = {
          FROM "Group" g
          JOIN document_group dg ON g.group_id = dg.group_id
          WHERE dg.document_id = $1`,
-        [parent.document_id]
+        [parent.documentId]
       );
-      return result.rows.map(row => ({ group_id: row.group_id, name: row.name }));
+      return result.rows.map(row => ({ groupId: row.group_id, name: row.name }));
     },
   },
 };
