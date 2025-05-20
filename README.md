@@ -80,7 +80,7 @@ De API is beschikbaar op: `http://localhost:4000/graphql`
 
 > Let op: dit endpoint accepteert alleen `POST`-requests. Gebruik bijvoorbeeld Postman of Insomnia.
 
-Er is een [Postman collectie]() beschikbaar om de queries te testen.
+Er is een [Postman collectie](https://speeding-crater-347082.postman.co/workspace/My-Workspace~516996a4-6fa7-485b-804f-0a7dba594bcf/collection/30911572-2066d047-230b-4aa2-b4d5-5fe843c9219b?action=share&creator=30911572) beschikbaar om de queries te testen.
 
 ---
 
