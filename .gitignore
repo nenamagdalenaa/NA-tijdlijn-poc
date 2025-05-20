@@ -21,3 +21,7 @@ out
 *.log
 
 backup.tar.gz
+back-end/codegen.ts
+front-end/codegen.ts
+front-end/src/graphql/generated/fragment-masking.ts
+front-end/src/graphql/generated/index.ts
