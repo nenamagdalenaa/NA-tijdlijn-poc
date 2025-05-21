@@ -30,7 +30,14 @@ export const resolvers = {
   Query: {
     topics: async () => {
       const result = await pool.query('SELECT topic_id, name, summary, top_words FROM topic');
-      return result.rows;
+      return result.rows
+        .filter(row => row.topic_id)
+        .map(row => ({
+          topicId: row.topic_id,
+          name: row.name,
+          summary: row.summary,
+          topWords: row.top_words,
+        }));
     },
 
     topic: async (_: any, args: { topicId: string }) => {
@@ -38,7 +45,15 @@ export const resolvers = {
         'SELECT topic_id, name, summary, top_words FROM topic WHERE topic_id = $1',
         [args.topicId]
       );
-      return result.rows[0] || null;
+
+      const row = result.rows[0];
+
+      return {
+        topicId: row.topic_id,
+        name: row.name,
+        summary: row.summary,
+        topWords: row.top_words,
+      };
     },
 
     topEntities: async () => {
@@ -201,7 +216,7 @@ export const resolvers = {
       const whereSQL = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
       const query = `
-        SELECT DISTINCT e.document_id, e.date, e.description, d.sourceurl
+        SELECT DISTINCT e.document_id, e.date, e.description, d.sourceurl, d.title, d.sourcetype
         FROM event e
         JOIN document d ON e.document_id = d.document_id
         JOIN document_topic dt ON d.document_id = dt.document_id
@@ -217,7 +232,9 @@ export const resolvers = {
       return result.rows.map(event => ({
         document: {
           documentId: event.document_id,
+          title: event.title,
           sourceUrl: event.sourceurl,
+          sourceType: event.sourcetype,
         },
         date: event.date,
         description: event.description,
@@ -226,23 +243,45 @@ export const resolvers = {
 
     searchDocuments: async (_: any, { query }: { query: string }) => {
       const embedding = await getEmbeddingLocally(query);
-      const embeddingLiteral = `[${embedding.join(',')}]`
+      const embeddingLiteral = `[${embedding.join(',')}]`;
 
       const result = await pool.query(
-        `SELECT 
+        `
+    WITH matched_docs AS (
+      SELECT 
         d.document_id,
         d.title,
         d.summary,
         d.sourceurl,
-        dos.dossier_id,
+        d.dossier_id,
         dos.title AS dossier_title,
-        dos."sourceurl" AS dossier_sourceurl
-        FROM document d
-        LEFT JOIN dossier dos ON d.dossier_id = dos.dossier_id
-        WHERE d.embedding <=> $1::vector < 0.2
-        ORDER BY d.embedding <=> $1::vector;`,
+        dos.sourceurl AS dossier_sourceurl,
+        d.embedding <=> $1::vector AS distance
+      FROM document d
+      LEFT JOIN dossier dos ON d.dossier_id = dos.dossier_id
+      WHERE d.embedding <=> $1::vector < 0.2
+    )
+    SELECT 
+      md.document_id,
+      md.title,
+      md.summary,
+      md.sourceurl,
+      md.dossier_id,
+      md.dossier_title,
+      md.dossier_sourceurl,
+      md.distance,
+      ARRAY_AGG(t.topic_id) AS topic_ids,
+      ARRAY_AGG(t.name) AS topic_names
+    FROM matched_docs md
+    JOIN document_topic dt ON md.document_id = dt.document_id
+    JOIN topic t ON dt.topic_id = t.topic_id
+    GROUP BY 
+      md.document_id, md.title, md.summary, md.sourceurl, 
+      md.dossier_id, md.dossier_title, md.dossier_sourceurl, md.distance
+    ORDER BY md.distance;
+    `,
         [embeddingLiteral]
-      )
+      );
 
       return result.rows.map(row => ({
         documentId: row.document_id,
@@ -254,7 +293,11 @@ export const resolvers = {
           title: row.dossier_title,
           sourceUrl: row.dossier_sourceurl,
         },
-      }))
+        topics: row.topic_ids.map((id: string, i: number) => ({
+          topicId: id,
+          name: row.topic_names[i]
+        }))
+      }));
     },
 
     getTimelineByQuery: async (
@@ -380,6 +423,19 @@ export const resolvers = {
         [parent.documentId]
       );
       return result.rows.map(row => ({ groupId: row.group_id, name: row.name }));
+    },
+    topics: async (parent: Document) => {
+      const result = await pool.query(
+        `SELECT t.topic_id, t.name
+        FROM topic t
+        JOIN document_topic dt ON t.topic_id = dt.topic_id
+        WHERE dt.document_id = $1`,
+        [parent.documentId]
+      );
+      return result.rows.map(row => ({
+        topicId: row.topic_id,
+        name: row.name
+      }));
     },
   },
 };

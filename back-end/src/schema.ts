@@ -20,7 +20,7 @@ export const typeDefs = gql`
     dossier: Dossier
     title: String
     type: String
-    sourcetype: String
+    sourceType: String
     scrapedDate: String
     sourceUrl: String
     extractedDate: String

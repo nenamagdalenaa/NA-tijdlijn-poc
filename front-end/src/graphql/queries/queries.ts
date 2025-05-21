@@ -28,17 +28,17 @@ export const GET_TOP_ENTITIES = gql`
   query GetTopEntities {
     topEntities {
       persons {
-        id
+        entityId
         name
         count
       }
       organizations {
-        id
+        entityId
         name
         count
       }
       groups {
-        id
+        entityId
         name
         count
       }
@@ -52,14 +52,17 @@ export const GET_ENTITIES_BY_TOPIC = gql`
       persons {
         entityId
         name
+        count
       }
       organizations {
         entityId
         name
+        count
       }
       groups {
         entityId
         name
+        count
       }
     }
   }
@@ -86,6 +89,20 @@ export const GET_TIMELINE_BY_TOPIC = gql`
       document {
         documentId
         sourceUrl
+        sourceType
+        title
+        persons {
+          personId
+          name 
+        }
+        organizations {
+          organizationId
+          name
+        }
+        groups {
+          groupId
+          name
+        }
       }
       date
       description
@@ -99,7 +116,7 @@ export const GET_TIMELINE_BY_SEARCH = gql`
     getTimelineByQuery(query: $query) {
       document {
         documentId
-        sourceurl
+        sourceUrl
         persons {
           personId
           name
@@ -142,6 +159,10 @@ export const SEARCH_DOCUMENTS = gql`
       groups {
         groupId
       }
+      topics {
+        topicId
+        name
+    }
     }
   }
 `;
