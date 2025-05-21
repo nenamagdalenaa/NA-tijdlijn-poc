@@ -1,106 +1,81 @@
 "use client";
 import DocumentCard from "@/components/documents/DocumentCard";
 import Filter from "@/components/filter/Filter";
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
-import React, { useMemo, useState } from "react";
-import { GET_TOP_ENTITIES, SEARCH_DOCUMENTS } from "../../graphql/queries/queries";
+import { useLazyQuery, useQuery } from "@apollo/client";
+import React, { useState } from "react";
+import { GET_TOP_ENTITIES, GET_DOCUMENTS } from "../../graphql/queries/queries";
 import { Document } from "@/graphql/generated/graphql";
 
 export default function Documents() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // State voor filters
   const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
   const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 
-  // Queries
-  const [searchDocuments, { loading, data, error }] = useLazyQuery(SEARCH_DOCUMENTS);
+  const [searchDocuments, { loading, data, error }] = useLazyQuery(GET_DOCUMENTS);
   const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_TOP_ENTITIES);
 
-  const searchResults = data?.searchDocuments ?? [];
-
-  const filteredDocuments = useMemo(() => {
-    if (!data?.searchDocuments) return [];
-
-    return data.searchDocuments.filter((doc: any) => {
-      const matchesPerson =
-        selectedPersons.length === 0 ||
-        (doc.persons ?? []).some((p: any) => selectedPersons.includes(p.person_id));
-
-      const matchesOrganization =
-        selectedOrganizations.length === 0 ||
-        (doc.organizations ?? []).some((o: any) => selectedOrganizations.includes(o.organization_id));
-
-      const matchesGroup =
-        selectedGroups.length === 0 ||
-        (doc.groups ?? []).some((g: any) => selectedGroups.includes(g.group_id));
-
-      return matchesPerson && matchesOrganization && matchesGroup;
-    });
-  }, [data?.searchDocuments, selectedPersons, selectedOrganizations, selectedGroups]);
-
+  const documents = data?.getDocuments ?? [];
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim() !== "") {
-      searchDocuments({ variables: { query: searchTerm } });
+      searchDocuments({ variables: { filterOptions: { query: searchTerm } } });
     }
   };
 
   return (
-    <div>
-      <main className="p-7">
-        <h1 className='font-extrabold text-5xl'>Zoek in documenten</h1>
-        <p className="mt-2">Zoek op een keyword om naar samenhangende documenten te zoeken.</p>
+    <main className="flex h-screen">
+      {/* Linkerzijde: Titel, beschrijving, zoekveld, filters */}
+      <div className="w-1/3 p-7 overflow-y-auto border-r border-gray-300 bg-white">
+        <h1 className="font-extrabold text-4xl mb-2">Zoek in documenten</h1>
+        <p className="mb-6 text-gray-700">Zoek op een keyword om naar samenhangende documenten te zoeken.</p>
 
-        <form onSubmit={handleSearch}>
+        <form onSubmit={handleSearch} className="mb-6">
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Bijv. vaccinaties"
-            className="mt-6 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-[#bedbff] focus:border-[#bedbff] w-[40%]"
+            className="w-full px-3 py-2 border border-gray-300 text-base focus:outline-none focus:ring-1 focus:ring-black focus:border-black"
           />
           <button
             type="submit"
-            className="ml-3 px-4 py-2 bg-[#bedbff] text-lg font-bold rounded hover:bg-[#467ac1] hover:text-white transition"
+            className="mt-3 w-full px-4 py-2 bg-gray-400 text-lg font-bold hover:bg-gray-300"
           >
             Zoek
           </button>
         </form>
 
+        {entitiesData && (
+          <Filter
+            persons={entitiesData.topEntities.persons}
+            organizations={entitiesData.topEntities.organizations}
+            groups={entitiesData.topEntities.groups}
+            showDateRange={false}
+            onFilterChange={({ persons, organizations, groups }) => {
+              setSelectedPersons(persons);
+              setSelectedOrganizations(organizations);
+              setSelectedGroups(groups);
+            }}
+          />
+        )}
+      </div>
+
+      {/* Rechterzijde: Documenten */}
+      <div className="flex-1 p-7 overflow-y-auto bg-gray-50">
         {loading && <p className="mt-4">Documenten laden...</p>}
         {error && <p className="mt-4 text-red-600">Fout: {error.message}</p>}
 
-        {entitiesData && (
-          <div className="mt-2 flex h-[70vh] gap-6">
-            <div className="w-1/4 overflow-y-auto">
-              <Filter
-                persons={entitiesData.topEntities.persons}
-                organizations={entitiesData.topEntities.organizations}
-                groups={entitiesData.topEntities.groups}
-                showDateRange={false}
-                onFilterChange={({ persons, organizations, groups, dateRange }) => {
-                  setSelectedPersons(persons);
-                  setSelectedOrganizations(organizations);
-                  setSelectedGroups(groups);
-                }}
-              />
-            </div>
-
-            <div className="flex-1 overflow-y-auto bg-white">
-              {filteredDocuments.length > 0 ? (
-                filteredDocuments.map((doc: Document) => (
-                  <DocumentCard key={doc.documentId} document={doc} />
-                ))
-              ) : (
-                <p className="mt-4 text-gray-600">Geen documenten gevonden.</p>
-              )}
-            </div>
-          </div>
+        {documents.length > 0 ? (
+          documents.map((doc: Document) => (
+            <DocumentCard key={doc.documentId} document={doc} />
+          ))
+        ) : (
+          <p className="mt-4 text-gray-600">Geen documenten gevonden.</p>
         )}
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

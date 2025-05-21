@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import TopicView from '@/components/topics/TopicView';
 import { GET_ENTITIES_BY_TOPIC, GET_TOPIC } from '../../../graphql/queries/queries';
 

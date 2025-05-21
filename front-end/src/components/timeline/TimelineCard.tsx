@@ -59,17 +59,19 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ timeline }) => {
             </div>
 
             <div className="relative flex justify-center">
-              <div className="w-1 bg-[#467ac1] h-full absolute top-0 rounded-b-full"></div>
-              <div className="absolute w-5 h-5 bg-[#bedbff] rounded-full border-3 border-[#bedbff]"></div>
+              <div className="w-1 bg-black h-full absolute top-0 rounded-b-full"></div>
+              <div className="absolute w-5 h-5 bg-gray-400 rounded-full border-3 border-gray-400"></div>
             </div>
 
-            <div className="bg-[#e6effa] p-4 rounded-lg shadow">
+            <div className="bg-[#e6effa] p-4 shadow">
               <ul className="list-disc list-inside space-y-2">
                 {groupedByDate[date].map((event, i) => (
                   <li key={i} className="relative">
                     {event.description}{" "}
-                    <div className="relative inline-flex group ml-2 cursor-pointer text-gray-400 hover:text-blue-600">
-                      ℹ️
+                    <div className="relative inline-flex group ml-2 cursor-pointer">
+                      <div className="px-2 py-1 bg-gray-300 text-sm font-bold cursor-pointer hover:bg-gray-200">
+                        ℹ️ Info
+                      </div>
                       <div className="absolute bottom-full pb-2 left-1/2 -translate-x-1/2 z-20 hidden group-hover:flex bg-white border border-gray-300 rounded shadow-lg p-3 w-80 text-sm text-black">
                         <div>
                           <strong>Afkomstig uit</strong> <br />

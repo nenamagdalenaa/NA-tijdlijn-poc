@@ -29,7 +29,7 @@ export default function Filter({ persons, organizations, groups, showDateRange, 
     };
 
     return (
-        <div className='bg-[#e6effa] p-4 rounded-lg shadow-md'>
+        <div className='bg-gray-200 p-4 shadow-md'>
             <h2 className="text-xl font-bold mb-2">Filter</h2>
             <h2 className="text-md font-bold mb-1">Personen</h2>
             {persons?.map((person, idx) => {
@@ -106,7 +106,7 @@ export default function Filter({ persons, organizations, groups, showDateRange, 
 
             <button
                 onClick={handleApplyFilters}
-                className="mt-6 mb-2 p-2 bg-[#bedbff] font-bold rounded hover:bg-[#467ac1] hover:text-white transition">
+                className="mt-6 mb-2 p-2 bg-gray-400 font-bold hover:bg-gray-300">
                 Toepassen
             </button>
         </div>

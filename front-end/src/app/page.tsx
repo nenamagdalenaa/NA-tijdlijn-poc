@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className="m-6 p-7">
         <div>
-            <h1 className="text-5xl font-bold mb-5">Welkom</h1>
+            <h1 className="text-4xl font-bold mb-5">Welkom</h1>
             <p>Dit Proof of Concept is tot stand gekomen vanuit een afstudeeropdracht bij het <span className="font-bold">Nationaal Archief</span>.
                 <br /> <br />
                 Het doel van dit Proof of Concept is om een tool te ontwikkelen dat het mogelijk maakt om

@@ -30,7 +30,7 @@ export const typeDefs = gql`
     groups: [Group!]!
     organizations: [Organization!]!
     persons: [Person!]!
-    topics: [Topic!]!
+    topics: [TopicAssignment!]!
   }
 
   # Event Type
@@ -68,45 +68,55 @@ export const typeDefs = gql`
     topWords: String
     summary: String
     documents: [Document!]!
-}
+  }
+
+  type TopicAssignment {
+    topicId: ID!
+    name: String
+    probability: Float
+  }
 
   type TopEntities {
     persons: [EntityCount!]!
     organizations: [EntityCount!]!
     groups: [EntityCount!]!
-}
+  }
 
   type EntityCount {
     entityId: String
     name: String
     count: Int!
-}
+  }
+
+  input DocumentFilterOptions {
+    query: String
+    topicId: ID
+  }
 
   # Query type
-type Query {
-  documents: [Document!]!
-  dossier(dossierId: String!): Dossier
-  events(documentId: String!): [Event!]!
-  groups: [Group!]!
-  organizations: [Organization!]!
-  people: [Person!]!
-  topic(topicId: ID!): Topic    
-  topics: [Topic!]!
-  topEntitiesByTopic(topicId: ID!): TopEntities!
-  topEntities: TopEntities!
-  getTimelineByTopic(
-    topicId: ID!,
-    persons: [String!],
-    organizations: [String!],
-    groups: [String!],
-    startDate: String,
-    endDate: String
-  ): [Event!]!
-  searchDocuments(query: String!): [Document!]!
-  getTimelineByQuery(query: String!): [Event!]!
-  getPersonsByDocumentId(documentId: ID!): [Person!]!
-  getOrganizationsByDocumentId(documentId: ID!): [Organization!]!
-  getGroupsByDocumentId(documentId: ID!): [Group!]!
-}
-
+  type Query {
+    documents: [Document!]!
+    dossier(dossierId: String!): Dossier
+    events(documentId: String!): [Event!]!
+    groups: [Group!]!
+    organizations: [Organization!]!
+    people: [Person!]!
+    topic(topicId: ID!): Topic    
+    topics: [Topic!]!
+    topEntitiesByTopic(topicId: ID!): TopEntities!
+    topEntities: TopEntities!
+    getTimelineByTopic(
+      topicId: ID!,
+      persons: [String!],
+      organizations: [String!],
+      groups: [String!],
+      startDate: String,
+      endDate: String
+    ): [Event!]!
+    getDocuments(filterOptions: DocumentFilterOptions): [Document!]!
+    getTimelineByQuery(query: String!): [Event!]!
+    getPersonsByDocumentId(documentId: ID!): [Person!]!
+    getOrganizationsByDocumentId(documentId: ID!): [Organization!]!
+    getGroupsByDocumentId(documentId: ID!): [Group!]!
+  }
 `;

@@ -17,24 +17,24 @@ export default function RootLayout({
       <body className="h-screen flex flex-col">
         <ApolloProviderWrapper>
           {/* Header with Navbar */}
-          <header className="bg-[#467ac1] text-white p-4 fixed top-0 left-0 w-full z-10 h-16">
+          <header className="bg-[#467ac1] p-4 fixed top-0 left-0 w-full z-10 h-16">
             <nav className="flex justify-between items-center">
               <Link href="/" className="text-2xl font-bold">
                 Covid-19 Woo Browser
               </Link>
               <ul className="flex space-x-4">
                 <li>
-                  <Link href="/topics" className="font-bold text-xl hover:text-black">
+                  <Link href="/topics" className="font-bold text-xl hover:text-gray-200">
                     Onderwerpen
                   </Link>
                 </li>
                 <li>
-                  <Link href="/timelines" className="font-bold text-xl hover:text-black">
+                  <Link href="/timelines" className="font-bold text-xl hover:text-gray-200">
                     Tijdlijnen
                   </Link>
                 </li>
                 <li>
-                  <Link href="/documents" className="font-bold text-xl hover:text-black">
+                  <Link href="/documents" className="font-bold text-xl hover:text-gray-200">
                     Documenten
                   </Link>
                 </li>
@@ -48,7 +48,7 @@ export default function RootLayout({
           </main>
 
           {/* Footer */}
-          <footer className="bg-[#bedbff] pt-2 pl-2 fixed bottom-0 left-0 w-full z-10 h-10">
+          <footer className="bg-gray-300 pt-2 pl-2 fixed bottom-0 left-0 w-full z-10 h-10">
             <div className="text-left text-sm">
               <p>&copy; 2025 Covid-19 Woo Browser. <span className="italic">Disclaimer: Dit Proof of Concept maakt gebruik van Gemini. Gemini kan fouten maken.</span></p>
             </div>

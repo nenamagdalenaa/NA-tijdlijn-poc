@@ -9,7 +9,7 @@ interface TopicStatsProps {
 
 export default function TopicStats({ persons, organizations, groups }: TopicStatsProps) {
   return (
-    <div className="m-4 p-6 bg-[#e6effa] rounded-lg shadow-md text-left">
+    <div className="m-4 p-6 bg-gray-200 text-left">
       <h2 className="font-bold text-2xl mb-6">Top Entiteiten</h2>
 
       {persons && persons.length > 0 && (
@@ -27,8 +27,8 @@ export default function TopicStats({ persons, organizations, groups }: TopicStat
 
       {organizations && organizations.length > 0 && (
         <div className="mb-4">
-          <h3 className="font-semibold text-lg text-gray-700 mb-2">Organisaties</h3>
-          <ul className="list-disc list-inside text-gray-600">
+          <h3 className="font-semibold text-lg mb-2">Organisaties</h3>
+          <ul className="list-disc list-inside">
             {organizations.map((organization, index) => (
               <li key={index} className="mb-1">
                 <span className="font-medium">{organization.name}</span> ({organization.count})
@@ -40,8 +40,8 @@ export default function TopicStats({ persons, organizations, groups }: TopicStat
 
       {groups && groups.length > 0 && (
         <div>
-          <h3 className="font-semibold text-lg text-gray-700 mb-2">Bevolkingsgroepen</h3>
-          <ul className="list-disc list-inside text-gray-600">
+          <h3 className="font-semibold text-lg mb-2">Bevolkingsgroepen</h3>
+          <ul className="list-disc list-inside">
             {groups.map((group, index) => (
               <li key={index} className="mb-1">
                 <span className="font-medium">{group.name}</span> ({group.count})

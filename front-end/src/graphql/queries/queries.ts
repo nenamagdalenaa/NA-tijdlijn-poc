@@ -138,31 +138,36 @@ export const GET_TIMELINE_BY_SEARCH = gql`
 
 // Documents
 
-export const SEARCH_DOCUMENTS = gql`
-  query SearchDocuments($query: String!) {
-    searchDocuments(query: $query) {
-      documentId
+export const GET_DOCUMENTS = gql`
+  query GetDocuments($filterOptions: DocumentFilterOptions) {
+  getDocuments(filterOptions: $filterOptions) {
+    documentId
+    title
+    summary
+    sourceUrl
+    dossier {
+      dossierId
       title
-      summary
       sourceUrl
-      dossier {
-        dossierId
-        title
-        sourceUrl
-      }
-      persons {
-        personId
-      }
-      organizations {
-        organizationId
-      }
-      groups {
-        groupId
-      }
-      topics {
-        topicId
-        name
     }
+    topics {
+      topicId
+      name
+      probability
+    }
+    persons {
+      personId
+      name
+    }
+    organizations {
+      organizationId
+      name
+    }
+    groups {
+      groupId
+      name
     }
   }
+}
+
 `;

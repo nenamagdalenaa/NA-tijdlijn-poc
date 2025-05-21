@@ -15,12 +15,19 @@ export default function TopicView({ topic_id, name, summary, persons, organizati
     return (
         <div>
             <div className="flex items-center justify-between m-6">
-                <h1 className="font-extrabold text-5xl text-[#467ac1]">{name}</h1>
-                <Link href={`/topics/${topic_id}/timeline`}>
-                    <button className="px-4 py-2 bg-[#bedbff] text-lg font-bold rounded hover:bg-[#467ac1] hover:text-white transition">
-                        Ga naar tijdlijn
-                    </button>
-                </Link>
+                <h1 className="font-extrabold text-4xl">{name}</h1>
+                <div>
+                    <Link href={`/topics/${topic_id}/timeline`}>
+                        <button className="mr-3 px-4 py-2 bg-gray-400 text-white text-lg font-bold hover:text-black">
+                            Ga naar tijdlijn
+                        </button>
+                    </Link>
+                    <Link href={`/topics/${topic_id}/documents`}>
+                        <button className="px-4 py-2 bg-gray-400 text-white text-lg font-bold hover:text-black">
+                            Ga naar documenten
+                        </button>
+                    </Link>
+                </div>
             </div>
             <div className="grid grid-cols-3 gap-4 flex-1 overflow-y-auto">
                 <div className="col-span-2 text-left ml-0 overflow-auto">
