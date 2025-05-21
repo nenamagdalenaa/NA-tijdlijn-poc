@@ -4,6 +4,7 @@ import Filter from "@/components/filter/Filter";
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import React, { useMemo, useState } from "react";
 import { GET_TOP_ENTITIES, SEARCH_DOCUMENTS } from "../../graphql/queries/queries";
+import { Document } from "@/graphql/generated/graphql";
 
 export default function Documents() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,23 +20,31 @@ export default function Documents() {
 
   const searchResults = data?.searchDocuments ?? [];
 
-  // Gefilterde documenten op basis van filters
   const filteredDocuments = useMemo(() => {
     if (!data?.searchDocuments) return [];
 
     return data.searchDocuments.filter((doc: any) => {
-      const matchesPerson = selectedPersons.length === 0 || doc.persons.some((p: any) => selectedPersons.includes(p.person_id));
-      const matchesOrganization = selectedOrganizations.length === 0 || doc.organizations.some((o: any) => selectedOrganizations.includes(o.organization_id));
-      const matchesGroup = selectedGroups.length === 0 || doc.groups.some((g: any) => selectedGroups.includes(g.group_id));
+      const matchesPerson =
+        selectedPersons.length === 0 ||
+        (doc.persons ?? []).some((p: any) => selectedPersons.includes(p.person_id));
+
+      const matchesOrganization =
+        selectedOrganizations.length === 0 ||
+        (doc.organizations ?? []).some((o: any) => selectedOrganizations.includes(o.organization_id));
+
+      const matchesGroup =
+        selectedGroups.length === 0 ||
+        (doc.groups ?? []).some((g: any) => selectedGroups.includes(g.group_id));
 
       return matchesPerson && matchesOrganization && matchesGroup;
     });
   }, [data?.searchDocuments, selectedPersons, selectedOrganizations, selectedGroups]);
 
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim() !== "") {
-      searchDocuments({ variables: { searchQuery: searchTerm } });
+      searchDocuments({ variables: { query: searchTerm } });
     }
   };
 
@@ -64,7 +73,7 @@ export default function Documents() {
         {loading && <p className="mt-4">Documenten laden...</p>}
         {error && <p className="mt-4 text-red-600">Fout: {error.message}</p>}
 
-        {entitiesData && filteredDocuments.length > 0 && (
+        {entitiesData && (
           <div className="mt-2 flex h-[70vh] gap-6">
             <div className="w-1/4 overflow-y-auto">
               <Filter
@@ -81,15 +90,15 @@ export default function Documents() {
             </div>
 
             <div className="flex-1 overflow-y-auto bg-white">
-              {filteredDocuments.map((doc: any) => (
-                <DocumentCard key={doc.document_id} document={doc} />
-              ))}
+              {filteredDocuments.length > 0 ? (
+                filteredDocuments.map((doc: Document) => (
+                  <DocumentCard key={doc.documentId} document={doc} />
+                ))
+              ) : (
+                <p className="mt-4 text-gray-600">Geen documenten gevonden.</p>
+              )}
             </div>
           </div>
-        )}
-
-        {data?.searchDocuments?.length === 0 && (
-          <p className="mt-4 text-gray-600">Geen documenten gevonden.</p>
         )}
       </main>
     </div>

@@ -7,18 +7,18 @@ import { GET_ENTITIES_BY_TOPIC, GET_TOPIC } from '../../../graphql/queries/queri
 
 const TopicPage = () => {
   const params = useParams();
-  const topic_id = params?.topic_id as string;
+  const topicId = params?.topic_id as string;
 
-  if (!topic_id) return <div>Loading topic...</div>;
+  if (!topicId) return <div>Loading topic...</div>;
 
   const { data: topicData, loading: topicLoading, error: topicError } = useQuery(GET_TOPIC, {
-    variables: { id: topic_id },
-    skip: !topic_id,
+    variables: { topicId: topicId },
+    skip: !topicId,
   });
 
   const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_ENTITIES_BY_TOPIC, {
-    variables: { topic_id },
-    skip: !topic_id,
+    variables: { topicId },
+    skip: !topicId,
   });
 
   if (topicLoading || entitiesLoading) return <div>Loading...</div>;
@@ -31,7 +31,7 @@ const TopicPage = () => {
   return (
     <div className="p-4">
       <TopicView
-        topic_id={topic_id}
+        topic_id={topicId}
         name={name}
         summary={summary}
         persons={persons}

@@ -12,9 +12,9 @@ export default function TopicGrid({topics}: TopicGridProps) {
       <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto">
       {topics.map((topic) => (
         <TopicCard
-          key={topic.topic_id ?? ''}
+          key={topic.topicId ?? ''}
           name={topic.name ?? ''} 
-          topic_id={topic.topic_id ?? ''}
+          topicId={topic.topicId ?? ''}
           />
       ))}
     </div>

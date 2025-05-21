@@ -8,7 +8,7 @@ import { GET_TOPIC, GET_ENTITIES_BY_TOPIC, GET_TIMELINE_BY_TOPIC } from "../../.
 
 const TimelinePage = () => {
   const params = useParams();
-  const topic_id = params?.topic_id;
+  const topicId = params?.topic_id;
 
   // State voor filters
   const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
@@ -20,25 +20,25 @@ const TimelinePage = () => {
   // Query met filters
   const { data: timelineData, loading: timelineLoading, error: timelineError, refetch } = useQuery(GET_TIMELINE_BY_TOPIC, {
     variables: {
-      topic_id,
+      topicId,
       persons: selectedPersons.length > 0 ? selectedPersons : null,
       organizations: selectedOrganizations.length > 0 ? selectedOrganizations : null,
       groups: selectedGroups.length > 0 ? selectedGroups : null,
       startDate,
       endDate,
     },
-    skip: !topic_id,
+    skip: !topicId,
   });
 
   // Topic en entities
   const { data: topicData, loading: topicLoading, error: topicError } = useQuery(GET_TOPIC, {
-    variables: { id: topic_id },
-    skip: !topic_id,
+    variables: { topicId: topicId },
+    skip: !topicId,
   });
 
   const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_ENTITIES_BY_TOPIC, {
-    variables: { topic_id },
-    skip: !topic_id,
+    variables: { topicId },
+    skip: !topicId,
   });
 
   const handleFilterChange = (type: string, values: string[] | { startDate: string; endDate: string }) => {
@@ -50,8 +50,6 @@ const TimelinePage = () => {
       setStartDate(startDate);
       setEndDate(endDate);
     }
-
-    // Refetch data met nieuwe filters
     refetch();
   };
 
@@ -85,7 +83,7 @@ const TimelinePage = () => {
               setStartDate(dateRange.from ? dateRange.from.toISOString().split("T")[0] : null);
               setEndDate(dateRange.to ? dateRange.to.toISOString().split("T")[0] : null);
               refetch({
-                topic_id,
+                topicId,
                 persons,
                 organizations,
                 groups,
@@ -99,9 +97,7 @@ const TimelinePage = () => {
 
         {/* Scrollbare TimelineCard */}
         <div className="flex-1 overflow-y-auto rounded-lg p-4 bg-white">
-          <TimelineCard
-            timeline={timelineData.getTimelineForTopic}
-          />
+          {timelineData && <TimelineCard timeline={timelineData.getTimelineByTopic} />}
         </div>
       </div>
     </div>

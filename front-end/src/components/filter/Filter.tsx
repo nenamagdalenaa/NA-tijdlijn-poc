@@ -32,59 +32,71 @@ export default function Filter({ persons, organizations, groups, showDateRange, 
         <div className='bg-[#e6effa] p-4 rounded-lg shadow-md'>
             <h2 className="text-xl font-bold mb-2">Filter</h2>
             <h2 className="text-md font-bold mb-1">Personen</h2>
-            {persons?.map(person => (
-                <div key={person.id}>
-                    <input
-                        type="checkbox"
-                        id={`person-${person.id}`}
-                        className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
-                        checked={selectedPersons.includes(person.id)}
-                        onChange={(e) => {
-                            const updated = e.target.checked
-                                ? [...selectedPersons, person.id]
-                                : selectedPersons.filter(id => id !== person.id);
-                            setSelectedPersons(updated);
-                        }}
-                    />
-                    <label htmlFor={`person-${person.id}`} className="ml-2">{person.name}</label>
-                </div>
-            ))}
+            {persons?.map((person, idx) => {
+                const personId = person.id ?? String(idx);
+                return (
+                    <div key={personId}>
+                        <input
+                            type="checkbox"
+                            id={`person-${personId}`}
+                            value={personId}
+                            className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
+                            checked={selectedPersons.includes(personId)}
+                            onChange={(e) => {
+                                const updated = e.target.checked
+                                    ? [...selectedPersons, personId]
+                                    : selectedPersons.filter(id => id !== personId);
+                                setSelectedPersons(updated);
+                            }}
+                        />
+                        <label htmlFor={`person-${personId}`} className="ml-2">{person.name}</label>
+                    </div>
+                );
+            })}
             <h2 className="text-md font-bold mb-1 mt-2">Organisaties</h2>
-            {organizations?.map(org => (
-                <div key={org.id}>
-                    <input
-                        type="checkbox"
-                        id={`organization-${org.id}`}
-                        className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
-                        checked={selectedOrganizations.includes(org.id)}
-                        onChange={(e) => {
-                            const updated = e.target.checked
-                                ? [...selectedOrganizations, org.id]
-                                : selectedOrganizations.filter(id => id !== org.id);
-                            setSelectedOrganizations(updated);
-                        }}
-                    />
-                    <label htmlFor={`organization-${org.id}`} className="ml-2">{org.name}</label>
-                </div>
-            ))}
+            {organizations?.map((org, idx) => {
+                const orgId = org.id ?? String(idx);
+                return (
+                    <div key={orgId}>
+                        <input
+                            type="checkbox"
+                            id={`organization-${orgId}`}
+                            value={orgId}
+                            className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
+                            checked={selectedOrganizations.includes(orgId)}
+                            onChange={(e) => {
+                                const updated = e.target.checked
+                                    ? [...selectedOrganizations, orgId]
+                                    : selectedOrganizations.filter(id => id !== orgId);
+                                setSelectedOrganizations(updated);
+                            }}
+                        />
+                        <label htmlFor={`organization-${orgId}`} className="ml-2">{org.name}</label>
+                    </div>
+                );
+            })}
             <h2 className="text-md font-bold mb-1 mt-2">Bevolkingsgroepen</h2>
-            {groups?.map(group => (
-                <div key={group.id}>
-                    <input
-                        type="checkbox"
-                        id={`group-${group.id}`}
-                        className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
-                        checked={selectedGroups.includes(group.id)}
-                        onChange={(e) => {
-                            const updated = e.target.checked
-                                ? [...selectedGroups, group.id]
-                                : selectedGroups.filter(id => id !== group.id);
-                            setSelectedGroups(updated);
-                        }}
-                    />
-                    <label htmlFor={`group-${group.id}`} className="ml-2">{group.name}</label>
-                </div>
-            ))}
+            {groups?.map((group, idx) => {
+                const groupId = group.id ?? String(idx);
+                return (
+                    <div key={groupId}>
+                        <input
+                            type="checkbox"
+                            id={`group-${groupId}`}
+                            value={groupId}
+                            className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
+                            checked={selectedGroups.includes(groupId)}
+                            onChange={(e) => {
+                                const updated = e.target.checked
+                                    ? [...selectedGroups, groupId]
+                                    : selectedGroups.filter(id => id !== groupId);
+                                setSelectedGroups(updated);
+                            }}
+                        />
+                        <label htmlFor={`group-${groupId}`} className="ml-2">{group.name}</label>
+                    </div>
+                );
+            })}
 
             {showDateRange && (
                 <><h2 className="text-md font-bold mt-2">Datum</h2><div className="mt-2">
