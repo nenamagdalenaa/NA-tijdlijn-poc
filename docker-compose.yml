@@ -3,29 +3,37 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.pgvector
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: readonly_user
-      POSTGRES_PASSWORD: alleenlezen123
-      POSTGRES_DB: db_covid
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
+    volumes:
+      - ./init/init.sql.template:/docker-entrypoint-initdb.d/init.sql.template:ro
 
   backend:
     build: ./back-end
+    env_file:
+      - .env
     volumes:
       - ./back-end:/app
     working_dir: /app
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgres://readonly_user:alleenlezen123@db:5432/db_covid
+      DATABASE_URL: postgres://${READONLY_USER}:${READONLY_PASSWORD}@db:5432/${POSTGRES_DB}
     ports:
       - "4000:4000"
     command: npm run dev
-
   # frontend:
   #   build: ./front-end
   #   depends_on:
   #     - backend
   #   ports:
   #     - "3000:3000"
+
+volumes:
+  pgdata: {}
