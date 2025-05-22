@@ -33,7 +33,6 @@ export default function Documents() {
     });
   };
 
-
   return (
     <main className="flex h-screen">
       {/* Linkerzijde: Titel, beschrijving, zoekveld, filters */}
@@ -63,6 +62,9 @@ export default function Documents() {
             organizations={entitiesData.getEntities.organizations}
             groups={entitiesData.getEntities.groups}
             showDateRange={false}
+            selectedPersons={selectedPersons}
+            selectedOrganizations={selectedOrganizations}
+            selectedGroups={selectedGroups}
             onFilterChange={({ persons, organizations, groups }) => {
               setSelectedPersons(persons);
               setSelectedOrganizations(organizations);

@@ -65,6 +65,9 @@ export default function Timelines() {
             persons={entitiesData.getEntities.persons}
             organizations={entitiesData.getEntities.organizations}
             groups={entitiesData.getEntities.groups}
+            selectedPersons={selectedPersons}
+            selectedOrganizations={selectedOrganizations}
+            selectedGroups={selectedGroups}
             showDateRange={true}
             onFilterChange={({ persons, organizations, groups, dateRange }) => {
               setSelectedPersons(persons);

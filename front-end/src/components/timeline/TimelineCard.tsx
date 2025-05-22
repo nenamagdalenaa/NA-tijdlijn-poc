@@ -1,5 +1,6 @@
 import { Document } from "@/graphql/generated/graphql";
 import React from "react";
+import ExternalLinkIcon from "../documents/LinkIcon";
 
 type TimelineEvent = {
   date?: string | null;
@@ -61,31 +62,31 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ timeline }) => {
                         ℹ️ Info
                       </div>
 
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 z-20 hidden group-hover:flex bg-white border border-gray-300 rounded shadow-lg p-3 w-80 text-sm text-black whitespace-normal break-words">
-                        <div>
-                          <strong>Afkomstig uit</strong> <br />
-                          <strong>Titel:</strong> {event.document?.title ?? <em>Onbekend</em>} <br />
-                          <strong>Brontype:</strong> {event.document?.sourceType ?? <em>Onbekend</em>} <br />
-                          <strong>Personen:</strong>{" "}
-                          {event.document?.persons?.map((p) => p.name).join(", ") || <em>Geen</em>} <br />
-                          <strong>Organisaties:</strong>{" "}
-                          {event.document?.organizations?.map((o) => o.name).join(", ") || <em>Geen</em>} <br />
-                          <strong>Bevolkingsgroepen:</strong>{" "}
-                          {event.document?.groups?.map((g) => g.name).join(", ") || <em>Geen</em>} <br />
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 z-20 hidden group-hover:flex bg-white border border-gray-300 rounded shadow-lg p-3 text-sm text-black w-80 whitespace-normal break-words">                        <div>
+                        <strong>Afkomstig uit</strong> <br />
+                        <strong>Titel:</strong> {event.document?.title ?? <em>Onbekend</em>} <br />
+                        <strong>Brontype:</strong> {event.document?.sourceType ?? <em>Onbekend</em>} <br />
+                        <strong>Personen:</strong>{" "}
+                        {event.document?.persons?.map((p) => p.name).join(", ") || <em>Geen</em>} <br />
+                        <strong>Organisaties:</strong>{" "}
+                        {event.document?.organizations?.map((o) => o.name).join(", ") || <em>Geen</em>} <br />
+                        <strong>Bevolkingsgroepen:</strong>{" "}
+                        {event.document?.groups?.map((g) => g.name).join(", ") || <em>Geen</em>} <br />
 
-                          {event.document?.sourceUrl ? (
-                            <a
-                              href={event.document.sourceUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 underline"
-                            >
-                              Link naar document
-                            </a>
-                          ) : (
-                            <span className="text-gray-400">Geen link beschikbaar</span>
-                          )}
-                        </div>
+                        {event.document?.sourceUrl ? (
+                          <a
+                            href={event.document.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-gray-300 text-sm font-semibold hover:bg-gray-200 w-fit"
+                          >
+                            Document
+                            <ExternalLinkIcon />
+                          </a>
+                        ) : (
+                          <span className="text-gray-400">Geen link beschikbaar</span>
+                        )}
+                      </div>
                       </div>
                     </div>
                   </li>

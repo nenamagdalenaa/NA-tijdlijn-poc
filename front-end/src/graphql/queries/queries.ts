@@ -134,6 +134,18 @@ export const GET_DOCUMENTS = gql`
       name
       probability
     }
+    persons {
+      personId
+      name  
+    }
+    organizations {
+      organizationId
+      name
+    }
+    groups {
+      groupId
+      name  
+    }
   }
 }
 

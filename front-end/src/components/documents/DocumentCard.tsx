@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Document } from "@/graphql/generated/graphql";
+import ExternalLinkIcon from "./LinkIcon";
 
 interface DocumentCardProps {
   document: Document;
@@ -69,7 +70,16 @@ export default function DocumentCard({ document }: DocumentCardProps) {
             ℹ️ Info
           </div>
           <div className="absolute top-full left-0 mt-2 hidden group-hover:block bg-white border border-gray-300 shadow-lg p-3 w-64 z-10 text-sm text-gray-800">
-            <p className="font-semibold mb-2">Topic informatie</p>
+            <div>
+              <p className="font-semibold mb-1 underline">Entiteiten</p>
+              <strong>Personen:</strong>{" "}
+              {document?.persons?.map((p) => p.name).join(", ") || <em>Geen</em>} <br />
+              <strong>Organisaties:</strong>{" "}
+              {document?.organizations?.map((o) => o.name).join(", ") || <em>Geen</em>} <br />
+              <strong>Bevolkingsgroepen:</strong>{" "}
+              {document?.groups?.map((g) => g.name).join(", ") || <em>Geen</em>} <br />
+            </div>
+            <p className="font-semibold mt-2 mb-1 underline">Topic zekerheid</p>
             <ul className="list-disc pl-5">
               {document.topics.map((topic, index) => (
                 <li key={topic.topicId ?? index}>
@@ -85,24 +95,4 @@ export default function DocumentCard({ document }: DocumentCardProps) {
       </div>
     </div>
   );
-}
-
-// 🔗 External link icon component
-function ExternalLinkIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className="w-4 h-4"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M18 13.5V18a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 18V8.25A2.25 2.25 0 016.75 6h4.5M15 3h6m0 0v6m0-6L10.5 13.5"
-      />
-    </svg>
-  );
-}
+};
