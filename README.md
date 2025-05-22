@@ -38,6 +38,7 @@ Plaats het bestand in de directory `init`
 `init/init.sql.template`
 
 **2. `.env` file aanmaken**
+
 Kopieer `.env.example` naar `.env` met
 ```bash 
 cp .env.example .env
