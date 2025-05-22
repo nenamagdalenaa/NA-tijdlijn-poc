@@ -39,6 +39,19 @@ export default function DocumentCard({ document }: DocumentCardProps) {
         </div>
       </div>
 
+      {/* Datum */}
+      <p className="text-gray-600">
+        <strong>
+          {document.scrapedDate
+            ? new Date(parseInt(document.scrapedDate)).toLocaleDateString("nl-NL", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
+            : "Geen datum"}
+        </strong>
+      </p>
+
       {/* Samenvatting */}
       <p className="mt-2 text-gray-600 italic">{document.summary}</p>
 

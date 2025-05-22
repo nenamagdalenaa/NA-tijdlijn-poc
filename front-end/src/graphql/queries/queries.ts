@@ -123,6 +123,7 @@ export const GET_DOCUMENTS = gql`
     title
     summary
     sourceUrl
+    scrapedDate
     dossier {
       dossierId
       title
