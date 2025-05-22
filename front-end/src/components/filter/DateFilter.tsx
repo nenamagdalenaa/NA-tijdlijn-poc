@@ -20,7 +20,7 @@ export default function DateRangeFilter({ from, to, onChange }: DateProps) {
                     startDate={from}
                     endDate={to}
                     placeholderText="Selecteer een datum"
-                    className="border border-black rounded px-2 py-1 text-sm"
+                    className="border border-black px-2 py-1 text-sm bg-white"
                     showMonthDropdown
                     showYearDropdown
                     dropdownMode="select"
@@ -38,7 +38,7 @@ export default function DateRangeFilter({ from, to, onChange }: DateProps) {
                     endDate={to}
                     minDate={from || undefined}
                     placeholderText="Selecteer een datum"
-                    className="border border-black rounded px-2 py-1 text-sm"
+                    className="border border-black px-2 py-1 text-sm bg-white"
                     showMonthDropdown
                     showYearDropdown
                     dropdownMode="select"

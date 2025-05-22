@@ -76,9 +76,9 @@ export default function EntityFilter({
                 placeholder={`Zoek ${title.toLowerCase()}...`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-1 text-xs mb-1 border border-gray-300 bg-white"
+                className="w-full p-1 text-xs mb-1 border border-black bg-white"
             />
-            <div className="border border-gray-300 bg-white">
+            <div className="border border-black bg-white">
                 <List
                     height={144}
                     itemCount={filteredEntities.length}

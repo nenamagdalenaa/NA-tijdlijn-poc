@@ -1,36 +1,23 @@
+import { Document } from "@/graphql/generated/graphql";
 import React from "react";
 
 type TimelineEvent = {
-  date: string;
-  description: string;
-  document: {
-    documentId: string;
-    sourceUrl: string;
-    title: string;
-    sourceType: string;
-    persons: Array<{
-      personId: string;
-      name: string;
-    }>;
-    organizations: Array<{
-      organizationId: string;
-      name: string;
-    }>;
-    groups: Array<{
-      groupId: string;
-      name: string;
-    }>;
-  };
+  date?: string | null;
+  description?: string | null;
+  document?: Document | null;
 };
+
 
 type TimelineCardProps = {
   timeline: TimelineEvent[];
 };
 
 const TimelineCard: React.FC<TimelineCardProps> = ({ timeline }) => {
-  const groupedByDate: Record<string, TimelineEvent[]> = timeline.reduce(
+  const validTimeline = timeline.filter(e => e.date);
+
+  const groupedByDate: Record<string, TimelineEvent[]> = validTimeline.reduce(
     (acc, event) => {
-      const dateKey = new Date(parseInt(event.date)).toLocaleDateString("nl-NL", {
+      const dateKey = new Date(parseInt(event.date!)).toLocaleDateString("nl-NL", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -66,28 +53,26 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ timeline }) => {
             <div className="bg-[#e6effa] p-4 shadow">
               <ul className="list-disc list-inside space-y-2">
                 {groupedByDate[date].map((event, i) => (
-                  <li key={i} className="relative">
-                    {event.description}{" "}
+                  <li key={i} className="relative break-words">
+                    <span className="whitespace-pre-line">{event.description}</span>
+
                     <div className="relative inline-flex group ml-2 cursor-pointer">
                       <div className="px-2 py-1 bg-gray-300 text-sm font-bold cursor-pointer hover:bg-gray-200">
                         ℹ️ Info
                       </div>
-                      <div className="absolute bottom-full pb-2 left-1/2 -translate-x-1/2 z-20 hidden group-hover:flex bg-white border border-gray-300 rounded shadow-lg p-3 w-80 text-sm text-black">
+
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 z-20 hidden group-hover:flex bg-white border border-gray-300 rounded shadow-lg p-3 w-80 text-sm text-black whitespace-normal break-words">
                         <div>
                           <strong>Afkomstig uit</strong> <br />
-                          <strong>Titel:</strong> {event.document?.title ?? <em>Onbekend</em>}
-                          <br />
-                          <strong>Brontype:</strong> {event.document?.sourceType ?? <em>Onbekend</em>}
-                          <br />
+                          <strong>Titel:</strong> {event.document?.title ?? <em>Onbekend</em>} <br />
+                          <strong>Brontype:</strong> {event.document?.sourceType ?? <em>Onbekend</em>} <br />
                           <strong>Personen:</strong>{" "}
-                          {event.document?.persons?.map((person) => person.name).join(", ") || <em>Geen</em>}
-                          <br />
+                          {event.document?.persons?.map((p) => p.name).join(", ") || <em>Geen</em>} <br />
                           <strong>Organisaties:</strong>{" "}
-                          {event.document?.organizations?.map((org) => org.name).join(", ") || <em>Geen</em>}
-                          <br />
+                          {event.document?.organizations?.map((o) => o.name).join(", ") || <em>Geen</em>} <br />
                           <strong>Bevolkingsgroepen:</strong>{" "}
-                          {event.document?.groups?.map((group) => group.name).join(", ") || <em>Geen</em>}
-                          <br />
+                          {event.document?.groups?.map((g) => g.name).join(", ") || <em>Geen</em>} <br />
+
                           {event.document?.sourceUrl ? (
                             <a
                               href={event.document.sourceUrl}
@@ -107,9 +92,6 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ timeline }) => {
                 ))}
               </ul>
             </div>
-
-
-
           </div>
         ))}
       </div>

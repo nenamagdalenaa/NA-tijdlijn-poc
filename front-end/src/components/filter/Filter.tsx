@@ -7,7 +7,7 @@ type FilterProps = {
     organizations?: Array<{ organizationId: string; name: string; }>;
     groups?: Array<{ groupId: string; name: string; }>;
     showDateRange?: boolean;
-    onFilterChange?: (filters: { persons: string[]; organizations: string[]; groups: string[]; }) => void;
+    onFilterChange?: (filters: { persons: string[]; organizations: string[]; groups: string[]; dateRange: { from: Date | null; to: Date | null }; }) => void;
     onApply?: () => void;
 };
 
@@ -25,7 +25,8 @@ export default function Filter({ persons, organizations, groups, showDateRange, 
         onFilterChange?.({
             persons: selectedPersons,
             organizations: selectedOrganizations,
-            groups: selectedGroups
+            groups: selectedGroups,
+            dateRange,
         });
 
         onApply?.();

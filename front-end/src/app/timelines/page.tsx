@@ -1,23 +1,43 @@
 "use client";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import TimelineCard from "@/components/timeline/TimelineCard";
-import { GET_TIMELINE_BY_SEARCH } from "@/graphql/queries/queries";
+import Filter from "@/components/filter/Filter";
+import { GET_TIMELINE, GET_ENTITIES } from "@/graphql/queries/queries";
+import { Event } from "@/graphql/generated/graphql";
 
 export default function Timelines() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchTimeline, { loading, data, error }] = useLazyQuery(GET_TIMELINE_BY_SEARCH);
+
+  const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
+  const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([]);
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+  const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({
+    from: null,
+    to: null,
+  });
+
+  const [getTimeline, { loading, data, error }] = useLazyQuery(GET_TIMELINE);
+  const { data: entitiesData } = useQuery(GET_ENTITIES);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchTerm.trim() !== "") {
-      searchTimeline({ variables: { query: searchTerm } });
-    }
+
+    const filterOptions: any = {
+      query: searchTerm.trim() || undefined,
+      persons: selectedPersons,
+      organizations: selectedOrganizations,
+      groups: selectedGroups,
+    };
+
+    getTimeline({
+      variables: { filterOptions }
+    });
   };
 
   return (
     <main className="flex h-screen">
-      {/* Sidebar links */}
+      {/* Linkerzijde: zoek + filter */}
       <div className="w-1/3 p-7 overflow-y-auto border-r border-gray-300 bg-white">
         <h1 className="font-extrabold text-4xl mb-2">Tijdlijnen</h1>
         <p className="mb-6 text-gray-700">
@@ -40,14 +60,47 @@ export default function Timelines() {
           </button>
         </form>
 
-        {loading && <p className="text-gray-500">Tijdlijn laden...</p>}
-        {error && <p className="text-red-600">Fout: {error.message}</p>}
+        {entitiesData && (
+          <Filter
+            persons={entitiesData.getEntities.persons}
+            organizations={entitiesData.getEntities.organizations}
+            groups={entitiesData.getEntities.groups}
+            showDateRange={true}
+            onFilterChange={({ persons, organizations, groups, dateRange }) => {
+              setSelectedPersons(persons);
+              setSelectedOrganizations(organizations);
+              setSelectedGroups(groups);
+              setDateRange(dateRange);
+            }}
+
+            onApply={() => {
+              console.log("Toepassen geklikt");
+              const filterOptions: any = {
+                query: searchTerm.trim() || undefined,
+                persons: selectedPersons,
+                organizations: selectedOrganizations,
+                groups: selectedGroups,
+                startDate: dateRange.from?.toISOString().split("T")[0],
+                endDate: dateRange.to?.toISOString().split("T")[0],
+              };
+
+              console.log("Filter options:", filterOptions);
+
+              getTimeline({
+                variables: { filterOptions }
+              });
+            }}
+          />
+        )}
       </div>
 
-      {/* Timeline rechts */}
+      {/* Rechterzijde: Tijdlijn */}
       <div className="flex-1 p-7 overflow-y-auto bg-gray-50">
-        {data?.getTimelineByQuery?.length > 0 ? (
-          <TimelineCard timeline={data.getTimelineByQuery} />
+        {loading && <p className="text-gray-500 mt-4">Tijdlijn laden...</p>}
+        {error && <p className="text-red-600 mt-4">Fout: {error.message}</p>}
+
+        {data?.getTimeline?.length > 0 ? (
+          <TimelineCard timeline={data.getTimeline as Event[]} />
         ) : (
           !loading && <p className="text-gray-500">Geen resultaten gevonden.</p>
         )}

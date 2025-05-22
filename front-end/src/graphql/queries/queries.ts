@@ -24,7 +24,6 @@ export const GET_TOPIC = gql`
 `;
 
 // Entities
-
 export const GET_ENTITIES = gql`
   query GetEntities {
     getEntities {
@@ -89,54 +88,14 @@ export const GET_ENTITIES_BY_TOPIC = gql`
 `;
 
 // Timelines / Events
-export const GET_TIMELINE_BY_TOPIC = gql`
-  query GetTimelineByTopic(
-    $topicId: ID!
-    $persons: [String!]
-    $organizations: [String!]
-    $groups: [String!]
-    $startDate: String
-    $endDate: String
-  ) {
-    getTimelineByTopic(
-      topicId: $topicId
-      persons: $persons
-      organizations: $organizations
-      groups: $groups
-      startDate: $startDate
-      endDate: $endDate
-    ) {
+export const GET_TIMELINE = gql`
+  query GetTimeline($filterOptions: FilterOptions) {
+    getTimeline(filterOptions: $filterOptions) {
       document {
         documentId
         sourceUrl
         sourceType
         title
-        persons {
-          personId
-          name 
-        }
-        organizations {
-          organizationId
-          name
-        }
-        groups {
-          groupId
-          name
-        }
-      }
-      date
-      description
-    }
-  }
-`;
-
-
-export const GET_TIMELINE_BY_SEARCH = gql`
-  query GetTimelineByQuery($query: String!) {
-    getTimelineByQuery(query: $query) {
-      document {
-        documentId
-        sourceUrl
         persons {
           personId
           name
@@ -157,9 +116,8 @@ export const GET_TIMELINE_BY_SEARCH = gql`
 `;
 
 // Documents
-
 export const GET_DOCUMENTS = gql`
-  query GetDocuments($filterOptions: DocumentFilterOptions) {
+  query GetDocuments($filterOptions: FilterOptions) {
   getDocuments(filterOptions: $filterOptions) {
     documentId
     title
@@ -174,18 +132,6 @@ export const GET_DOCUMENTS = gql`
       topicId
       name
       probability
-    }
-    persons {
-      personId
-      name
-    }
-    organizations {
-      organizationId
-      name
-    }
-    groups {
-      groupId
-      name
     }
   }
 }

@@ -88,47 +88,30 @@ export const typeDefs = gql`
     count: Int!
   }
 
-  input DocumentFilterOptions {
-  query: String
-  topicId: ID
-  persons: [ID!]
-  organizations: [ID!]
-  groups: [ID!]
-}
-
+  input FilterOptions {
+    query: String
+    topicId: ID
+    persons: [ID!]
+    organizations: [ID!]
+    groups: [ID!]
+    startDate: String
+    endDate: String
+  }
 
   type EntityGroups {
-  persons: [Person!]!
-  organizations: [Organization!]!
-  groups: [Group!]!
-}
+    persons: [Person!]!
+    organizations: [Organization!]!
+    groups: [Group!]!
+  }
 
   # Query type
   type Query {
-    documents: [Document!]!
-    dossier(dossierId: String!): Dossier
-    events(documentId: String!): [Event!]!
-    groups: [Group!]!
-    organizations: [Organization!]!
-    people: [Person!]!
     topic(topicId: ID!): Topic    
     topics: [Topic!]!
     topEntitiesByTopic(topicId: ID!): TopEntities!
     topEntities: TopEntities!
-    getTimelineByTopic(
-      topicId: ID!,
-      persons: [String!],
-      organizations: [String!],
-      groups: [String!],
-      startDate: String,
-      endDate: String
-    ): [Event!]!
-    getDocuments(filterOptions: DocumentFilterOptions): [Document!]!
-    getTimelineByQuery(query: String!): [Event!]!
-    getPersonsByDocumentId(documentId: ID!): [Person!]!
-    getOrganizationsByDocumentId(documentId: ID!): [Organization!]!
-    getGroupsByDocumentId(documentId: ID!): [Group!]!
+    getDocuments(filterOptions: FilterOptions): [Document!]!
+    getTimeline(filterOptions: FilterOptions): [Event!]!
     getEntities: EntityGroups!
-
   }
 `;
