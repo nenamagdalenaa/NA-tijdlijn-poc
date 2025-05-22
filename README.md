@@ -28,23 +28,23 @@ Een Proof of Concept project om documenten, dossiers en metadata uit een Woo-dat
 
 ## Lokaal opstarten 
 
-Deze repository bevat het grote databasebestand niet i.v.m. GitHub-beperkingen. Voer de volgende stappen uit om de database gereed te maken.
+Deze repository bevat het grote databasebestand niet i.v.m. GitHub-beperkingen. Voer de volgende stappen uit na het clonen van de repository om de database gereed te maken.
 
-1. Download handmatig de init file:
+**1. Download handmatig de init file en plaats in project**
    - [`init.sql.template`](https://drive.google.com/file/d/1Xh6dIE0h16BUzQDdM-v8eo-_M_m6uTbw/view?usp=sharing)
 
-2. Plaats het bestand in de directory `init`
+Plaats het bestand in de directory `init`
 
 `init/init.sql.template`
 
-3. `.env` file aanmaken
+**2. `.env` file aanmaken**
 Kopieer `.env.example` naar `.env` met
 ```bash 
 cp .env.example .env
 ```
-Vul vervolens de missende velden in. Het wachtwoord van de beheerder kan aangevraagd worden (stuur een mail naar `nena.github@outlook.com`).
+Vul vervolgens de missende velden in. Het wachtwoord van de beheerder kan aangevraagd worden (stuur een mail naar `nena.github@outlook.com`).
 
-4. Docker
+**3. Docker**
 
 Vereisten
 
@@ -58,7 +58,7 @@ docker-compose up --build
 ```
 De PostgreSQL database zal automatisch worden opgebouwd met het script uit `init/init.sql.template`
 
-##### Vervolgens is de UI beschikbaar op: `http://localhost:3000/`
+Vervolgens is de UI beschikbaar op: `http://localhost:3000/`
 
 ---
 ## Testen van de GraphQL API
