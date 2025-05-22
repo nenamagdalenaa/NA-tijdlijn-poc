@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import DateRangeFilter from './DateFilter';
+import EntityFilter from './EntityFilter';
 
 type FilterProps = {
-    persons?: Array<{ id: string; name: string; }>;
-    organizations?: Array<{ id: string; name: string; }>;
-    groups?: Array<{ id: string; name: string; }>;
+    persons?: Array<{ personId: string; name: string; }>;
+    organizations?: Array<{ organizationId: string; name: string; }>;
+    groups?: Array<{ groupId: string; name: string; }>;
     showDateRange?: boolean;
-    onFilterChange?: (filters: { persons: string[]; organizations: string[]; groups: string[]; dateRange: { from: Date | null; to: Date | null; }; }) => void;
+    onFilterChange?: (filters: { persons: string[]; organizations: string[]; groups: string[]; }) => void;
+    onApply?: () => void;
 };
 
-export default function Filter({ persons, organizations, groups, showDateRange, onFilterChange }: FilterProps) {
+export default function Filter({ persons, organizations, groups, showDateRange, onFilterChange, onApply }: FilterProps) {
     const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
     const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([]);
     const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
@@ -23,80 +25,43 @@ export default function Filter({ persons, organizations, groups, showDateRange, 
         onFilterChange?.({
             persons: selectedPersons,
             organizations: selectedOrganizations,
-            groups: selectedGroups,
-            dateRange,
+            groups: selectedGroups
         });
+
+        onApply?.();
     };
 
     return (
         <div className='bg-gray-200 p-4 shadow-md'>
             <h2 className="text-xl font-bold mb-2">Filter</h2>
-            <h2 className="text-md font-bold mb-1">Personen</h2>
-            {persons?.map((person, idx) => {
-                const personId = person.id ?? String(idx);
-                return (
-                    <div key={personId}>
-                        <input
-                            type="checkbox"
-                            id={`person-${personId}`}
-                            value={personId}
-                            className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
-                            checked={selectedPersons.includes(personId)}
-                            onChange={(e) => {
-                                const updated = e.target.checked
-                                    ? [...selectedPersons, personId]
-                                    : selectedPersons.filter(id => id !== personId);
-                                setSelectedPersons(updated);
-                            }}
-                        />
-                        <label htmlFor={`person-${personId}`} className="ml-2">{person.name}</label>
-                    </div>
-                );
-            })}
-            <h2 className="text-md font-bold mb-1 mt-2">Organisaties</h2>
-            {organizations?.map((org, idx) => {
-                const orgId = org.id ?? String(idx);
-                return (
-                    <div key={orgId}>
-                        <input
-                            type="checkbox"
-                            id={`organization-${orgId}`}
-                            value={orgId}
-                            className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
-                            checked={selectedOrganizations.includes(orgId)}
-                            onChange={(e) => {
-                                const updated = e.target.checked
-                                    ? [...selectedOrganizations, orgId]
-                                    : selectedOrganizations.filter(id => id !== orgId);
-                                setSelectedOrganizations(updated);
-                            }}
-                        />
-                        <label htmlFor={`organization-${orgId}`} className="ml-2">{org.name}</label>
-                    </div>
-                );
-            })}
-            <h2 className="text-md font-bold mb-1 mt-2">Bevolkingsgroepen</h2>
-            {groups?.map((group, idx) => {
-                const groupId = group.id ?? String(idx);
-                return (
-                    <div key={groupId}>
-                        <input
-                            type="checkbox"
-                            id={`group-${groupId}`}
-                            value={groupId}
-                            className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
-                            checked={selectedGroups.includes(groupId)}
-                            onChange={(e) => {
-                                const updated = e.target.checked
-                                    ? [...selectedGroups, groupId]
-                                    : selectedGroups.filter(id => id !== groupId);
-                                setSelectedGroups(updated);
-                            }}
-                        />
-                        <label htmlFor={`group-${groupId}`} className="ml-2">{group.name}</label>
-                    </div>
-                );
-            })}
+            <EntityFilter
+                title="Personen"
+                prefix="person"
+                entities={persons?.map(p => ({ id: p.personId, name: p.name })) || []}
+                selected={selectedPersons.map(id => `person:${id}`)}
+                onChange={(selected) =>
+                    setSelectedPersons(selected.map(id => id.split(':')[1]))
+                }
+            />
+            <EntityFilter
+                title="Organisaties"
+                prefix='org'
+                entities={organizations?.map(o => ({ id: o.organizationId, name: o.name })) || []}
+                selected={selectedOrganizations.map(id => `org:${id}`)}
+                onChange={(selected) =>
+                    setSelectedOrganizations(selected.map(id => id.split(':')[1]))
+                }
+            />
+
+            <EntityFilter
+                title="Bevolkingsgroepen"
+                prefix='group'
+                entities={groups?.map(g => ({ id: g.groupId, name: g.name })) || []}
+                selected={selectedGroups.map(id => `group:${id}`)}
+                onChange={(selected) =>
+                    setSelectedGroups(selected.map(id => id.split(':')[1]))
+                }
+            />
 
             {showDateRange && (
                 <><h2 className="text-md font-bold mt-2">Datum</h2><div className="mt-2">

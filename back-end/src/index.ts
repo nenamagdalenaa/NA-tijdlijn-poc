@@ -5,6 +5,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import { typeDefs } from './schema';
 import { resolvers } from './resolvers';
+import { createDataloaders } from './dataloaders';
 
 async function startServer() {
   const app = express();
@@ -19,10 +20,14 @@ async function startServer() {
   app.use(
     '/graphql',
     cors({
-      origin: 'http://localhost:3000', // React app URL
+      origin: 'http://localhost:3000',
     }),
     bodyParser.json(),
-    expressMiddleware(server)
+    expressMiddleware(server, {
+      context: async () => ({
+        loaders: createDataloaders()
+      }),
+    })
   );
 
   app.listen(4000, '0.0.0.0', () => {

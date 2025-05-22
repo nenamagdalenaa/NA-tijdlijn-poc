@@ -89,9 +89,19 @@ export const typeDefs = gql`
   }
 
   input DocumentFilterOptions {
-    query: String
-    topicId: ID
-  }
+  query: String
+  topicId: ID
+  persons: [ID!]
+  organizations: [ID!]
+  groups: [ID!]
+}
+
+
+  type EntityGroups {
+  persons: [Person!]!
+  organizations: [Organization!]!
+  groups: [Group!]!
+}
 
   # Query type
   type Query {
@@ -118,5 +128,7 @@ export const typeDefs = gql`
     getPersonsByDocumentId(documentId: ID!): [Person!]!
     getOrganizationsByDocumentId(documentId: ID!): [Organization!]!
     getGroupsByDocumentId(documentId: ID!): [Group!]!
+    getEntities: EntityGroups!
+
   }
 `;

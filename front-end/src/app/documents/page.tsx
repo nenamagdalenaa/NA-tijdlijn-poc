@@ -3,7 +3,7 @@ import DocumentCard from "@/components/documents/DocumentCard";
 import Filter from "@/components/filter/Filter";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import React, { useState } from "react";
-import { GET_TOP_ENTITIES, GET_DOCUMENTS } from "../../graphql/queries/queries";
+import { GET_ENTITIES, GET_DOCUMENTS } from "../../graphql/queries/queries";
 import { Document } from "@/graphql/generated/graphql";
 
 export default function Documents() {
@@ -13,17 +13,26 @@ export default function Documents() {
   const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 
-  const [searchDocuments, { loading, data, error }] = useLazyQuery(GET_DOCUMENTS);
-  const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_TOP_ENTITIES);
+  const [getDocuments, { loading, data, error }] = useLazyQuery(GET_DOCUMENTS);
+  const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_ENTITIES);
 
   const documents = data?.getDocuments ?? [];
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchTerm.trim() !== "") {
-      searchDocuments({ variables: { filterOptions: { query: searchTerm } } });
-    }
+
+    const filterOptions: any = {
+      query: searchTerm.trim() || undefined,
+      persons: selectedPersons,
+      organizations: selectedOrganizations,
+      groups: selectedGroups,
+    };
+
+    getDocuments({
+      variables: { filterOptions }
+    });
   };
+
 
   return (
     <main className="flex h-screen">
@@ -50,14 +59,26 @@ export default function Documents() {
 
         {entitiesData && (
           <Filter
-            persons={entitiesData.topEntities.persons}
-            organizations={entitiesData.topEntities.organizations}
-            groups={entitiesData.topEntities.groups}
+            persons={entitiesData.getEntities.persons}
+            organizations={entitiesData.getEntities.organizations}
+            groups={entitiesData.getEntities.groups}
             showDateRange={false}
             onFilterChange={({ persons, organizations, groups }) => {
               setSelectedPersons(persons);
               setSelectedOrganizations(organizations);
               setSelectedGroups(groups);
+            }}
+            onApply={() => {
+              const filterOptions: any = {
+                query: searchTerm.trim() || undefined,
+                persons: selectedPersons,
+                organizations: selectedOrganizations,
+                groups: selectedGroups,
+              };
+
+              getDocuments({
+                variables: { filterOptions }
+              });
             }}
           />
         )}
@@ -68,12 +89,10 @@ export default function Documents() {
         {loading && <p className="mt-4">Documenten laden...</p>}
         {error && <p className="mt-4 text-red-600">Fout: {error.message}</p>}
 
-        {documents.length > 0 ? (
+        {data && documents.length > 0 && (
           documents.map((doc: Document) => (
             <DocumentCard key={doc.documentId} document={doc} />
           ))
-        ) : (
-          <p className="mt-4 text-gray-600">Geen documenten gevonden.</p>
         )}
       </div>
     </main>

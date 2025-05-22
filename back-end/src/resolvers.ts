@@ -1,6 +1,7 @@
 import { pool } from './db';
 import { spawn } from 'child_process'
 import { Document } from './generated/graphql';
+import { DocumentParent, GraphQLContext } from './types';
 
 async function getEmbeddingLocally(query: string): Promise<number[]> {
   return new Promise((resolve, reject) => {
@@ -102,6 +103,39 @@ export const resolvers = {
         })),
       };
     },
+
+    getEntities: async () => {
+      const personsRes = await pool.query(`
+        SELECT person_id, name FROM person ORDER BY name
+      `);
+
+      const orgsRes = await pool.query(`
+        SELECT organization_id, name FROM organization ORDER BY name
+      `);
+
+      const groupsRes = await pool.query(`
+        SELECT group_id, name FROM "Group" ORDER BY name
+      `);
+
+      return {
+        persons: personsRes.rows.map(row => ({
+          personId: row.person_id,
+          name: row.name,
+          documents: [], // voeg leeg array toe als je geen relaties wilt ophalen
+        })),
+        organizations: orgsRes.rows.map(row => ({
+          organizationId: row.organization_id,
+          name: row.name,
+          documents: [],
+        })),
+        groups: groupsRes.rows.map(row => ({
+          groupId: row.group_id,
+          name: row.name,
+          documents: [],
+        })),
+      };
+    },
+
 
     topEntitiesByTopic: async (_: any, { topicId }: { topicId: string }) => {
       const personsRes = await pool.query(`
@@ -243,114 +277,94 @@ export const resolvers = {
 
     getDocuments: async (
       _: any,
-      { filterOptions }: { filterOptions?: { query?: string; topicId?: string } }
+      {
+        filterOptions,
+      }: {
+        filterOptions?: {
+          query?: string;
+          topicId?: string;
+          persons?: string[];
+          organizations?: string[];
+          groups?: string[];
+          limit?: number;
+        };
+      }
     ) => {
-      const { query, topicId } = filterOptions || {};
+      const { query, topicId, persons = [], organizations = [], groups = [], limit = 100 } = filterOptions || {};
 
+      const filters: string[] = [];
+      const params: any[] = [];
+      let useEmbedding = false;
+
+      // filter op topic of query
       if (topicId) {
-        const result = await pool.query(
-          `
-      SELECT 
-        d.document_id,
-        d.title,
-        d.summary,
-        d.sourceurl,
-        d.dossier_id,
-        dos.title AS dossier_title,
-        dos.sourceurl AS dossier_sourceurl,
-        ARRAY_AGG(t.topic_id) AS topic_ids,
-        ARRAY_AGG(t.name) AS topic_names,
-        ARRAY_AGG(dt.probability) AS topic_probabilities
-      FROM document d
-      LEFT JOIN dossier dos ON d.dossier_id = dos.dossier_id
-      JOIN document_topic dt ON d.document_id = dt.document_id
-      JOIN topic t ON dt.topic_id = t.topic_id
-      WHERE t.topic_id = $1
-      GROUP BY 
-        d.document_id, d.title, d.summary, d.sourceurl, 
-        d.dossier_id, dos.title, dos.sourceurl
-      `,
-          [topicId]
-        );
-
-        return result.rows.map(row => ({
-          documentId: row.document_id,
-          title: row.title,
-          summary: row.summary,
-          sourceUrl: row.sourceurl,
-          dossier: row.dossier_id && {
-            dossierId: row.dossier_id,
-            title: row.dossier_title,
-            sourceUrl: row.dossier_sourceurl,
-          },
-          topics: row.topic_ids.map((id: string, i: number) => ({
-            topicId: id,
-            name: row.topic_names[i],
-            probability: row.topic_probabilities[i],
-          })),
-        }));
+        params.push(topicId);
+        filters.push(`t.topic_id = $${params.length}`);
       } else if (query) {
         const embedding = await getEmbeddingLocally(query);
         const embeddingLiteral = `[${embedding.join(',')}]`;
-
-        const result = await pool.query(
-          `
-      WITH matched_docs AS (
-        SELECT 
-          d.document_id,
-          d.title,
-          d.summary,
-          d.sourceurl,
-          d.dossier_id,
-          dos.title AS dossier_title,
-          dos.sourceurl AS dossier_sourceurl,
-          d.embedding <=> $1::vector AS distance
-        FROM document d
-        LEFT JOIN dossier dos ON d.dossier_id = dos.dossier_id
-        WHERE d.embedding <=> $1::vector < 0.2
-      )
-      SELECT 
-        md.document_id,
-        md.title,
-        md.summary,
-        md.sourceurl,
-        md.dossier_id,
-        md.dossier_title,
-        md.dossier_sourceurl,
-        md.distance,
-        ARRAY_AGG(t.topic_id) AS topic_ids,
-        ARRAY_AGG(t.name) AS topic_names,
-        ARRAY_AGG(dt.probability) AS topic_probabilities
-      FROM matched_docs md
-      JOIN document_topic dt ON md.document_id = dt.document_id
-      JOIN topic t ON dt.topic_id = t.topic_id    
-      GROUP BY 
-        md.document_id, md.title, md.summary, md.sourceurl, 
-        md.dossier_id, md.dossier_title, md.dossier_sourceurl, md.distance
-      ORDER BY md.distance;
-      `,
-          [embeddingLiteral]
-        );
-
-        return result.rows.map(row => ({
-          documentId: row.document_id,
-          title: row.title,
-          summary: row.summary,
-          sourceUrl: row.sourceurl,
-          dossier: row.dossier_id && {
-            dossierId: row.dossier_id,
-            title: row.dossier_title,
-            sourceUrl: row.dossier_sourceurl,
-          },
-          topics: row.topic_ids.map((id: string, i: number) => ({
-            topicId: id,
-            name: row.topic_names[i],
-            probability: row.topic_probabilities[i],
-          })),
-        }));
+        params.push(embeddingLiteral);
+        useEmbedding = true;
       } else {
         throw new Error("filterOptions must contain either 'query' or 'topicId'");
       }
+
+      if (persons.length) {
+        params.push(persons);
+        filters.push(`dp.person_id = ANY($${params.length})`);
+      }
+      if (organizations.length) {
+        params.push(organizations);
+        filters.push(`dorg.organization_id = ANY($${params.length})`);
+      }
+      if (groups.length) {
+        params.push(groups);
+        filters.push(`dg.group_id = ANY($${params.length})`);
+      }
+
+      const filterSQL = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
+      params.push(limit);
+
+      const joins = `
+    LEFT JOIN document_person dp ON d.document_id = dp.document_id
+    LEFT JOIN document_organization dorg ON d.document_id = dorg.document_id
+    LEFT JOIN document_group dg ON d.document_id = dg.document_id
+    JOIN document_topic dt ON d.document_id = dt.document_id
+    JOIN topic t ON dt.topic_id = t.topic_id
+  `;
+
+      const baseSelect = `
+    SELECT DISTINCT d.document_id, d.title, d.summary, d.sourceurl, d.dossier_id
+    FROM document d
+    ${joins}
+    ${filterSQL}
+    LIMIT $${params.length}
+  `;
+
+      const embeddingSelect = `
+    WITH matched_docs AS (
+      SELECT d.*, d.embedding <=> $1::vector AS distance
+      FROM document d
+      WHERE d.embedding <=> $1::vector < 0.2
+    )
+    SELECT DISTINCT md.document_id, md.title, md.summary, md.sourceurl, md.dossier_id, md.distance
+    FROM matched_docs md
+    ${joins.replace(/d\./g, 'md.')}
+    ${filterSQL.replace(/d\./g, 'md.')}
+    ORDER BY md.distance
+    LIMIT $${params.length}
+  `;
+
+      const sql = useEmbedding ? embeddingSelect : baseSelect;
+      const result = await pool.query(sql, params);
+
+      return result.rows.map((row) => ({
+        documentId: row.document_id,
+        title: row.title,
+        summary: row.summary,
+        sourceUrl: row.sourceurl,
+        dossierId: row.dossier_id,
+      }));
     },
 
 
@@ -442,41 +456,20 @@ export const resolvers = {
     people: () => [],
   },
   Document: {
-    persons: async (parent: Document) => {
-      const result = await pool.query(
-        `SELECT p.person_id, p.name
-         FROM person p
-         JOIN document_person dp ON p.person_id = dp.person_id
-         WHERE dp.document_id = $1`,
-        [parent.documentId]
-      );
-      return result.rows.map(row => ({ personId: row.person_id, name: row.name }));
+    persons: (parent: Document, _: any, context: GraphQLContext) => {
+      return context.loaders.personLoader.load(parent.documentId);
     },
-    organizations: async (parent: Document) => {
-      const result = await pool.query(
-        `SELECT o.organization_id, o.name
-        FROM organization o
-        JOIN document_organization dorg ON o.organization_id = dorg.organization_id
-        WHERE dorg.document_id = $1`,
-        [parent.documentId]
-      );
-
-      return result.rows
-        .filter(row => row.organization_id !== null) // voeg dit toe
-        .map(row => ({
-          organizationId: row.organization_id,
-          name: row.name
-        }));
+    organizations: (parent: Document, _: any, context: GraphQLContext) => {
+      return context.loaders.organizationLoader.load(parent.documentId);
     },
-    groups: async (parent: Document) => {
-      const result = await pool.query(
-        `SELECT g.group_id, g.name
-         FROM "Group" g
-         JOIN document_group dg ON g.group_id = dg.group_id
-         WHERE dg.document_id = $1`,
-        [parent.documentId]
-      );
-      return result.rows.map(row => ({ groupId: row.group_id, name: row.name }));
+    groups: (parent: Document, _: any, context: GraphQLContext) => {
+      return context.loaders.groupLoader.load(parent.documentId);
     },
-  },
+    dossier: (parent: DocumentParent, _: any, context: GraphQLContext) => {
+      return context.loaders.dossierLoader.load(parent.dossierId ?? '');
+    },
+    topics: (parent: Document, _: any, context: GraphQLContext) => {
+      return context.loaders.topicLoader.load(parent.documentId);
+    },
+  }
 };

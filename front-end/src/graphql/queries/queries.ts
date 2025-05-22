@@ -24,6 +24,26 @@ export const GET_TOPIC = gql`
 `;
 
 // Entities
+
+export const GET_ENTITIES = gql`
+  query GetEntities {
+    getEntities {
+      persons {
+        personId
+        name
+      }
+      organizations {
+        organizationId
+        name
+      }
+      groups {
+        groupId
+        name
+      }
+    }
+  }
+`;
+
 export const GET_TOP_ENTITIES = gql`
   query GetTopEntities {
     topEntities {

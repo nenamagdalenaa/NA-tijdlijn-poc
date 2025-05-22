@@ -16,7 +16,7 @@ export default function Topics() {
     <div className="p-7 flex flex-col h-[90vh]">
       {/* Fixed top section */}
       <header className="sticky top-0 z-10 bg-white">
-        <h1 className="font-extrabold text-5xl">Onderwerpen</h1>
+        <h1 className="font-extrabold text-4xl mb-2">Onderwerpen</h1>
         <p>Klik op een onderwerp voor meer informatie over dat onderwerp.</p>
       </header>
 
