@@ -28,48 +28,35 @@ Een Proof of Concept project om documenten, dossiers en metadata uit een Woo-dat
 
 ## Lokaal opstarten 
 
-### 1. Database initialiseren
-
 Deze repository bevat het grote databasebestand niet i.v.m. GitHub-beperkingen. Voer de volgende stappen uit om de database gereed te maken.
 
-1. Download handmatig het volgende zip-bestand:
-   - [`backup.tar.gz`](https://drive.google.com/file/d/196vlV4oMzBOSBPj2NSLHCe1KnVZc7yWZ/view?usp=sharing)
+1. Download handmatig de init file:
+   - [`init.sql.template`](https://drive.google.com/file/d/1Xh6dIE0h16BUzQDdM-v8eo-_M_m6uTbw/view?usp=sharing)
 
-2. Run het volgende command in de terminal in de root van het project
+2. Plaats het bestand in de directory `init`
 
-```bash
-tar -xzf backup.tar.gz
+`init/init.sql.template`
+
+3. `.env` file aanmaken
+Kopieer `.env.example` naar `.env` met
+```bash 
+cp .env.example .env
 ```
+Vul vervolens de missende velden in. Het wachtwoord van de beheerder kan aangevraagd worden (stuur een mail naar `nena.github@outlook.com`).
 
-#### Windows-gebruikers
+4. Docker
 
-Je kunt `backup.tar.gz` uitpakken met:
-
-- [7-Zip](https://www.7-zip.org/)
-- Of via WSL (Windows Subsystem for Linux):
-
-```bash
-tar -xzf backup.tar.gz
-```
-
-Docker zal de data vervolgens automatisch inladen bij het starten.
-
-
-### 2. Docker
-
-#### Vereisten
+Vereisten
 
 - [Docker](https://www.docker.com/products/docker-desktop/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
-#### Starten
-
-In de root:
+Start de Docker containers vervolens op met het command in de root van het project
 
 ```bash
 docker-compose up --build
 ```
-De images worden gebouwd en de containers worden gestart. Dit kan een tijdje duren.
+De PostgreSQL database zal automatisch worden opgebouwd met het script uit `init/init.sql.template`
 
 ##### Vervolgens is de UI beschikbaar op: `http://localhost:3000/`
 
