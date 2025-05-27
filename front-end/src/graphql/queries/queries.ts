@@ -43,28 +43,6 @@ export const GET_ENTITIES = gql`
   }
 `;
 
-export const GET_TOP_ENTITIES = gql`
-  query GetTopEntities {
-    topEntities {
-      persons {
-        entityId
-        name
-        count
-      }
-      organizations {
-        entityId
-        name
-        count
-      }
-      groups {
-        entityId
-        name
-        count
-      }
-    }
-  }
-`;
-
 export const GET_ENTITIES_BY_TOPIC = gql`
   query GetEntitiesByTopic($topicId: ID!) {
     topEntitiesByTopic(topicId: $topicId) {
