@@ -5,13 +5,14 @@ import 'react-datepicker/dist/react-datepicker.css';
 type DateProps = {
     from: Date | null;
     to: Date | null;
-    onChange: (range: { from: Date | null; to: Date | null }) => void;
+    onChange: (dateRange: { from: Date | null; to: Date | null }) => void;
 };
 
 export default function DateRangeFilter({ from, to, onChange }: DateProps) {
+
+
     return (
         <div className="flex gap-4 items-center">
-            {/* Start Date Picker */}
             <div className="flex flex-col">
                 <label className="text-sm mb-1 font-bold">Van</label>
                 <DatePicker
@@ -28,8 +29,6 @@ export default function DateRangeFilter({ from, to, onChange }: DateProps) {
                     openToDate={from ?? new Date()} 
                 />
             </div>
-
-            {/* End Date Picker */}
             <div className="flex flex-col">
                 <label className="text-sm mb-1 font-bold">Tot</label>
                 <DatePicker

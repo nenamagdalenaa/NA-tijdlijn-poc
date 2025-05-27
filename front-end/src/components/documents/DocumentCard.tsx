@@ -4,11 +4,7 @@ import React from "react";
 import { Document } from "@/graphql/generated/graphql";
 import ExternalLinkIcon from "./LinkIcon";
 
-interface DocumentCardProps {
-  document: Document;
-}
-
-export default function DocumentCard({ document }: DocumentCardProps) {
+export default function DocumentCard({ document }: { document: Document }) {
   return (
     <div className="bg-[#e6effa] p-4 shadow mb-4 relative">
       {/* Header: titel + knoppen rechtsboven */}

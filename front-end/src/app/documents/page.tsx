@@ -86,7 +86,6 @@ export default function Documents() {
         )}
       </div>
 
-      {/* Rechterzijde: Documenten */}
       <div className="flex-1 p-7 overflow-y-auto bg-gray-50">
         {loading && <p className="mt-4">Documenten laden...</p>}
         {error && <p className="mt-4 text-red-600">Fout: {error.message}</p>}

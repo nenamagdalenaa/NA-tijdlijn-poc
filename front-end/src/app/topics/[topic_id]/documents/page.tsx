@@ -25,7 +25,7 @@ export default function Documents() {
     const { data: topicData, loading: topicLoading, error: topicError } = useQuery(GET_TOPIC, {
         variables: { topicId: topicId },
         skip: !topicId,
-      });
+    });
 
     const handleApplyFilters = () => {
         refetch({
@@ -38,18 +38,18 @@ export default function Documents() {
         });
     };
 
-    const {topicName} = topicData?.topic || {};
-
+    const topicName = topicData?.topic.name || "";
+    
     return (
         <div>
             <main className="p-7">
-                <h1 className='font-extrabold text-5xl'>Documenten: {topicName}</h1>
+                <h1 className='font-extrabold text-3xl mb-4'>Documenten: {topicName}</h1>
 
                 {documentsLoading && <p className="mt-4">Documenten laden...</p>}
                 {documentsError && <p className="mt-4 text-red-600">Fout: {documentsError.message}</p>}
 
                 {entitiesData && documentsData && (
-                    <div className="mt-2 flex h-[70vh] gap-6">
+                    <div className="mt-2 flex h-screen gap-6">
                         <div className="w-1/4 overflow-y-auto">
                             <Filter
                                 persons={entitiesData.getEntities.persons}
@@ -59,7 +59,7 @@ export default function Documents() {
                                 selectedOrganizations={selectedOrganizations}
                                 selectedGroups={selectedGroups}
                                 showDateRange={false}
-                                onFilterChange={({ persons, organizations, groups, dateRange }) => {
+                                onFilterChange={({ persons, organizations, groups }) => {
                                     setSelectedPersons(persons);
                                     setSelectedOrganizations(organizations);
                                     setSelectedGroups(groups);

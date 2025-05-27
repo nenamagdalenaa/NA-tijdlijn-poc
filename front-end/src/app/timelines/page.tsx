@@ -69,6 +69,7 @@ export default function Timelines() {
             selectedOrganizations={selectedOrganizations}
             selectedGroups={selectedGroups}
             showDateRange={true}
+            dateRange={dateRange}
             onFilterChange={({ persons, organizations, groups, dateRange }) => {
               setSelectedPersons(persons);
               setSelectedOrganizations(organizations);

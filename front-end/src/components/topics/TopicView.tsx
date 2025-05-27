@@ -18,12 +18,12 @@ export default function TopicView({ topic_id, name, summary, persons, organizati
                 <h1 className="font-extrabold text-4xl">{name}</h1>
                 <div>
                     <Link href={`/topics/${topic_id}/timeline`}>
-                        <button className="mr-3 px-4 py-2 bg-gray-400 text-white text-lg font-bold hover:text-black">
+                        <button className="mr-3 px-4 py-2 bg-gray-400 text-lg font-bold hover:bg-gray-300">
                             Ga naar tijdlijn
                         </button>
                     </Link>
                     <Link href={`/topics/${topic_id}/documents`}>
-                        <button className="px-4 py-2 bg-gray-400 text-white text-lg font-bold hover:text-black">
+                        <button className="px-4 py-2 bg-gray-400 text-lg font-bold hover:bg-gray-300">
                             Ga naar documenten
                         </button>
                     </Link>

@@ -39,6 +39,8 @@ const TimelinePage = () => {
         persons: selectedPersons,
         organizations: selectedOrganizations,
         groups: selectedGroups,
+        startDate: dateRange.from ? dateRange.from.toISOString() : null,
+        endDate: dateRange.to ? dateRange.to.toISOString() : null,
       },
     });
   };
@@ -48,13 +50,13 @@ const TimelinePage = () => {
   if (topicError) return <p>Fout: {topicError.message}</p>;
   if (timelineLoading) return <p>Tijdlijn laden...</p>;
 
-  const {topicName} = topicData?.topic || {};
+  const topicName = topicData?.topic.name || '';
+  console.log(dateRange);
 
   return (
-    <div className="p-6 h-screen flex">
-      {/* Filter component */}
+    <div className="p-1 h-screen flex">
       <div className="w-1/3 p-7 overflow-y-auto border-r border-gray-300 bg-white">
-        <h1 className="font-extrabold text-4xl mb-2">Tijdlijn: {topicName}</h1>
+        <h1 className="font-extrabold text-3xl mb-4">Tijdlijn: {topicName}</h1>
         <Filter
           persons={entitiesData.getEntities.persons}
           organizations={entitiesData.getEntities.organizations}
@@ -62,17 +64,17 @@ const TimelinePage = () => {
           selectedPersons={selectedPersons}
           selectedOrganizations={selectedOrganizations}
           selectedGroups={selectedGroups}
-          showDateRange={false}
+          showDateRange={true}
+          dateRange={dateRange}
           onFilterChange={({ persons, organizations, groups, dateRange }) => {
             setSelectedPersons(persons);
             setSelectedOrganizations(organizations);
             setSelectedGroups(groups);
+            setDateRange(dateRange);
           }}
           onApply={handleApplyFilters}
         />
       </div>
-
-      {/* Rechterzijde: Timeline Cards */}
       <div className="flex-1 p-7 overflow-y-auto bg-gray-50">
         {timelineData.getTimeline && <TimelineCard timeline={timelineData.getTimeline} />}
       </div>
