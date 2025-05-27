@@ -78,3 +78,7 @@ Er is een [Postman collectie](https://speeding-crater-347082.postman.co/workspac
 
 ---
 ## Known impedements & future improvements
+
+- Dataset uitbreiden, entity extraction
+- Performance
+- Hosting
