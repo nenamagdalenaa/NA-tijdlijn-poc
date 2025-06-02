@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Home() {
   return (
-    <div className="m-6 p-7">
+    <div className="m-6 p-2">
       <div>
         <h1 className="text-4xl font-bold mb-5">Welkom</h1>
         <p>
@@ -13,21 +13,28 @@ export default function Home() {
           de inhoud van archieven te doorzoeken en te analyseren.
           <br />
           Een belangrijk onderdeel van deze tool is het archief inzichtelijk maken door middel van{" "}
-          <span className="font-bold">tijdlijnen</span>. 
+          <span className="font-bold">tijdlijnen</span>.
           Wie was waar en wanneer betrokken bij de gebeurtenissen die in de archieven zijn vastgelegd?
           <br /><br />
           Als testset is hiervoor een dataset gebruikt van{" "}
           <span className="font-bold">COVID-19 Woo-documenten</span> vanuit het{" "}
-          <span className="font-bold">Ministerie van Volksgezondheid, Welzijn en Sport</span>.
-          Dit Proof of Concept bevat{" "}
+          <span className="font-bold">Ministerie van Volksgezondheid, Welzijn en Sport
+          </span> gescraped van de website{" "}
+          <a href="https://open.minvws.nl/thema/covid-19"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline">
+            open.minvws.nl/thema/covid-19
+          </a>.
+          <br />Dit Proof of Concept bevat{" "}
           <span className="italic">
-            Woo-dossiers van grofweg de eerste signalen van de coronacrisis tot en met de zomer van 2020
+            Woo-dossiers met ongeveer 23.000 documenten van grofweg de eerste signalen van de coronacrisis tot en met de zomer van 2020
           </span>{" "}
           (de eerste 9 maanden).
           <br /><br />
           De tijdlijnen, bestaande uit gebeurtenissen, personen, organisaties en bevolkingsgroepen,
-          zijn tot stand gekomen met behulp van{" "}
-          <span className="font-bold">Artificial Intelligence (AI)</span>.
+          zijn tot stand gekomen met behulp van het Large Language Model{" "}
+          <span className="font-bold">Gemini</span>.
         </p>
       </div>
 
@@ -50,11 +57,11 @@ export default function Home() {
         <a href="/timelines" className="col-span-1 text-center bg-gray-300 p-4 hover:bg-gray-400 transition">
           <h1 className="text-2xl font-bold mb-5">Tijdlijnen</h1>
           <p>
-            Naast tijdlijnen per onderwerp kan er ook zelf gezocht worden naar een <span className="italic">keyword</span>,
+            Naast tijdlijnen per onderwerp kan er ook zelf gezocht worden met een zoekopdracht,
             om op basis van samenhangende gebeurtenissen een tijdlijn te genereren.
             <br /><br />
             Er kan bijvoorbeeld gezocht worden op 'mondkapjes', 'vaccinatie' of 'quarantaine'.
-            Gebeurtenissen uit de documenten die het keyword bevatten worden vervolgens verzameld en chronologisch weergegeven.
+            Gebeurtenissen uit de documenten die overeenkomen met de zoekoprdacht worden vervolgens verzameld en chronologisch weergegeven.
             <br /><br />
             Ook hier zijn filteropties beschikbaar om het doorzoeken te vergemakkelijken.
           </p>
@@ -64,10 +71,10 @@ export default function Home() {
         <a href="/documents" className="col-span-1 text-center bg-gray-300 p-4 hover:bg-gray-400 transition">
           <h1 className="text-2xl font-bold mb-5">Documenten</h1>
           <p>
-            Alle Woo-documenten in deze dataset zijn afzonderlijk doorzoekbaar.
-            Je kunt per document details bekijken zoals de samenvatting, betrokken personen of organisaties, en de gekoppelde onderwerpen.
+            Alle Woo-documenten in deze dataset zijn ook doorzoekbaar met een zoekopdracht.
+            Per document is er metadata te raadplegen zoals de samenvatting, betrokken personen of organisaties, en de gekoppelde onderwerpen.
             <br /><br />
-            Elk document is gelinkt aan een dossier en bevat eventueel een tijdlijn van gebeurtenissen die daaruit zijn afgeleid.
+            Het originele document en het dossier waar het document deel van uitmaakt zijn ook te raadplegen.
           </p>
         </a>
       </div>
