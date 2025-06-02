@@ -26,12 +26,12 @@ export type Document = {
   organizations: Array<Organization>;
   persons: Array<Person>;
   scrapedDate?: Maybe<Scalars['String']['output']>;
+  sourceType?: Maybe<Scalars['String']['output']>;
   sourceUrl?: Maybe<Scalars['String']['output']>;
-  sourcetype?: Maybe<Scalars['String']['output']>;
   summary?: Maybe<Scalars['String']['output']>;
   text?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
-  topics: Array<Topic>;
+  topics: Array<TopicAssignment>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
@@ -55,11 +55,28 @@ export type EntityCount = {
   name?: Maybe<Scalars['String']['output']>;
 };
 
+export type EntityGroups = {
+  __typename?: 'EntityGroups';
+  groups: Array<Group>;
+  organizations: Array<Organization>;
+  persons: Array<Person>;
+};
+
 export type Event = {
   __typename?: 'Event';
   date?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   document?: Maybe<Document>;
+};
+
+export type FilterOptions = {
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  groups?: InputMaybe<Array<Scalars['ID']['input']>>;
+  organizations?: InputMaybe<Array<Scalars['ID']['input']>>;
+  persons?: InputMaybe<Array<Scalars['ID']['input']>>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+  topicId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type Group = {
@@ -85,18 +102,9 @@ export type Person = {
 
 export type Query = {
   __typename?: 'Query';
-  documents: Array<Document>;
-  dossier?: Maybe<Dossier>;
-  events: Array<Event>;
-  getGroupsByDocumentId: Array<Group>;
-  getOrganizationsByDocumentId: Array<Organization>;
-  getPersonsByDocumentId: Array<Person>;
-  getTimelineBySearch: Array<Event>;
-  getTimelineByTopic: Array<Event>;
-  groups: Array<Group>;
-  organizations: Array<Organization>;
-  people: Array<Person>;
-  searchDocuments: Array<Document>;
+  getDocuments: Array<Document>;
+  getEntities: EntityGroups;
+  getTimeline: Array<Event>;
   topEntities: TopEntities;
   topEntitiesByTopic: TopEntities;
   topic?: Maybe<Topic>;
@@ -104,48 +112,13 @@ export type Query = {
 };
 
 
-export type QueryDossierArgs = {
-  dossierId: Scalars['String']['input'];
+export type QueryGetDocumentsArgs = {
+  filterOptions?: InputMaybe<FilterOptions>;
 };
 
 
-export type QueryEventsArgs = {
-  documentId: Scalars['String']['input'];
-};
-
-
-export type QueryGetGroupsByDocumentIdArgs = {
-  documentId: Scalars['ID']['input'];
-};
-
-
-export type QueryGetOrganizationsByDocumentIdArgs = {
-  documentId: Scalars['ID']['input'];
-};
-
-
-export type QueryGetPersonsByDocumentIdArgs = {
-  documentId: Scalars['ID']['input'];
-};
-
-
-export type QueryGetTimelineBySearchArgs = {
-  query: Scalars['String']['input'];
-};
-
-
-export type QueryGetTimelineByTopicArgs = {
-  endDate?: InputMaybe<Scalars['String']['input']>;
-  groups?: InputMaybe<Array<Scalars['String']['input']>>;
-  organizations?: InputMaybe<Array<Scalars['String']['input']>>;
-  persons?: InputMaybe<Array<Scalars['String']['input']>>;
-  startDate?: InputMaybe<Scalars['String']['input']>;
-  topicId: Scalars['ID']['input'];
-};
-
-
-export type QuerySearchDocumentsArgs = {
-  query: Scalars['String']['input'];
+export type QueryGetTimelineArgs = {
+  filterOptions?: InputMaybe<FilterOptions>;
 };
 
 
@@ -155,7 +128,7 @@ export type QueryTopEntitiesByTopicArgs = {
 
 
 export type QueryTopicArgs = {
-  topidId: Scalars['ID']['input'];
+  topicId: Scalars['ID']['input'];
 };
 
 export type TopEntities = {
@@ -171,6 +144,13 @@ export type Topic = {
   name?: Maybe<Scalars['String']['output']>;
   summary?: Maybe<Scalars['String']['output']>;
   topWords?: Maybe<Scalars['String']['output']>;
+  topicId: Scalars['ID']['output'];
+};
+
+export type TopicAssignment = {
+  __typename?: 'TopicAssignment';
+  name?: Maybe<Scalars['String']['output']>;
+  probability?: Maybe<Scalars['Float']['output']>;
   topicId: Scalars['ID']['output'];
 };
 
@@ -249,7 +229,10 @@ export type ResolversTypes = {
   Document: ResolverTypeWrapper<Document>;
   Dossier: ResolverTypeWrapper<Dossier>;
   EntityCount: ResolverTypeWrapper<EntityCount>;
+  EntityGroups: ResolverTypeWrapper<EntityGroups>;
   Event: ResolverTypeWrapper<Event>;
+  FilterOptions: FilterOptions;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   Group: ResolverTypeWrapper<Group>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
@@ -259,6 +242,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   TopEntities: ResolverTypeWrapper<TopEntities>;
   Topic: ResolverTypeWrapper<Topic>;
+  TopicAssignment: ResolverTypeWrapper<TopicAssignment>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -267,7 +251,10 @@ export type ResolversParentTypes = {
   Document: Document;
   Dossier: Dossier;
   EntityCount: EntityCount;
+  EntityGroups: EntityGroups;
   Event: Event;
+  FilterOptions: FilterOptions;
+  Float: Scalars['Float']['output'];
   Group: Group;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
@@ -277,6 +264,7 @@ export type ResolversParentTypes = {
   String: Scalars['String']['output'];
   TopEntities: TopEntities;
   Topic: Topic;
+  TopicAssignment: TopicAssignment;
 };
 
 export type DocumentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Document'] = ResolversParentTypes['Document']> = {
@@ -288,12 +276,12 @@ export type DocumentResolvers<ContextType = any, ParentType extends ResolversPar
   organizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   persons?: Resolver<Array<ResolversTypes['Person']>, ParentType, ContextType>;
   scrapedDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sourceType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sourceUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  sourcetype?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   summary?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   text?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  topics?: Resolver<Array<ResolversTypes['Topic']>, ParentType, ContextType>;
+  topics?: Resolver<Array<ResolversTypes['TopicAssignment']>, ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -315,6 +303,13 @@ export type EntityCountResolvers<ContextType = any, ParentType extends Resolvers
   count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   entityId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type EntityGroupsResolvers<ContextType = any, ParentType extends ResolversParentTypes['EntityGroups'] = ResolversParentTypes['EntityGroups']> = {
+  groups?: Resolver<Array<ResolversTypes['Group']>, ParentType, ContextType>;
+  organizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
+  persons?: Resolver<Array<ResolversTypes['Person']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -347,21 +342,12 @@ export type PersonResolvers<ContextType = any, ParentType extends ResolversParen
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  documents?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType>;
-  dossier?: Resolver<Maybe<ResolversTypes['Dossier']>, ParentType, ContextType, RequireFields<QueryDossierArgs, 'dossierId'>>;
-  events?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'documentId'>>;
-  getGroupsByDocumentId?: Resolver<Array<ResolversTypes['Group']>, ParentType, ContextType, RequireFields<QueryGetGroupsByDocumentIdArgs, 'documentId'>>;
-  getOrganizationsByDocumentId?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryGetOrganizationsByDocumentIdArgs, 'documentId'>>;
-  getPersonsByDocumentId?: Resolver<Array<ResolversTypes['Person']>, ParentType, ContextType, RequireFields<QueryGetPersonsByDocumentIdArgs, 'documentId'>>;
-  getTimelineBySearch?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<QueryGetTimelineBySearchArgs, 'query'>>;
-  getTimelineByTopic?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<QueryGetTimelineByTopicArgs, 'topicId'>>;
-  groups?: Resolver<Array<ResolversTypes['Group']>, ParentType, ContextType>;
-  organizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
-  people?: Resolver<Array<ResolversTypes['Person']>, ParentType, ContextType>;
-  searchDocuments?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QuerySearchDocumentsArgs, 'query'>>;
+  getDocuments?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryGetDocumentsArgs>>;
+  getEntities?: Resolver<ResolversTypes['EntityGroups'], ParentType, ContextType>;
+  getTimeline?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType, Partial<QueryGetTimelineArgs>>;
   topEntities?: Resolver<ResolversTypes['TopEntities'], ParentType, ContextType>;
   topEntitiesByTopic?: Resolver<ResolversTypes['TopEntities'], ParentType, ContextType, RequireFields<QueryTopEntitiesByTopicArgs, 'topicId'>>;
-  topic?: Resolver<Maybe<ResolversTypes['Topic']>, ParentType, ContextType, RequireFields<QueryTopicArgs, 'topidId'>>;
+  topic?: Resolver<Maybe<ResolversTypes['Topic']>, ParentType, ContextType, RequireFields<QueryTopicArgs, 'topicId'>>;
   topics?: Resolver<Array<ResolversTypes['Topic']>, ParentType, ContextType>;
 };
 
@@ -381,10 +367,18 @@ export type TopicResolvers<ContextType = any, ParentType extends ResolversParent
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TopicAssignmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['TopicAssignment'] = ResolversParentTypes['TopicAssignment']> = {
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  probability?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  topicId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
   Document?: DocumentResolvers<ContextType>;
   Dossier?: DossierResolvers<ContextType>;
   EntityCount?: EntityCountResolvers<ContextType>;
+  EntityGroups?: EntityGroupsResolvers<ContextType>;
   Event?: EventResolvers<ContextType>;
   Group?: GroupResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
@@ -392,5 +386,6 @@ export type Resolvers<ContextType = any> = {
   Query?: QueryResolvers<ContextType>;
   TopEntities?: TopEntitiesResolvers<ContextType>;
   Topic?: TopicResolvers<ContextType>;
+  TopicAssignment?: TopicAssignmentResolvers<ContextType>;
 };
 
