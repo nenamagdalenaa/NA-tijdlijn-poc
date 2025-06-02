@@ -30,8 +30,10 @@ async function startServer() {
     })
   );
 
-  app.listen(4000, '0.0.0.0', () => {
-    console.log('🚀 Server ready at http://localhost:4000/graphql');
+  const PORT = parseInt(process.env.PORT || '4000', 10);
+
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server ready at https://na-tijdlijn-poc.onrender.com/graphql`);
   });
 }
 
