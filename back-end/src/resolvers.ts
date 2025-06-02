@@ -369,7 +369,7 @@ export const resolvers = {
       FROM document d
       WHERE d.embedding <=> $1::vector < 0.2
     )
-    SELECT DISTINCT md.document_id, md.title, md.summary, md.sourceurl, md.dossier_id, md.distance
+    SELECT DISTINCT md.document_id, md.title, md.summary, md.sourceurl, md.dossier_id, md.distance, md.date_scraped
     FROM matched_docs md
     ${joins.replace(/d\./g, 'md.')}
     ${filterSQL.replace(/d\./g, 'md.')}
