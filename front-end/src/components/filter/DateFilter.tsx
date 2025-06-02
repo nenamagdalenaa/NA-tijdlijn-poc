@@ -10,7 +10,6 @@ type DateProps = {
 
 export default function DateRangeFilter({ from, to, onChange }: DateProps) {
 
-
     return (
         <div className="flex gap-4 items-center">
             <div className="flex flex-col">
