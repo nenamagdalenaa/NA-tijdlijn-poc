@@ -23,12 +23,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("ingelogd");
-    setIngelogd(false);
-    setWachtwoord("");
-  };
-
   if (!ingelogd) {
     return (
       <main className="flex flex-col items-center justify-center h-screen">
@@ -83,9 +77,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               Disclaimer: Dit Proof of Concept maakt gebruik van Gemini. Gemini kan fouten maken.
             </span>
           </p>
-          <button onClick={handleLogout} className="text-red-500 underline">
-            Uitloggen
-          </button>
         </div>
       </footer>
     </>
