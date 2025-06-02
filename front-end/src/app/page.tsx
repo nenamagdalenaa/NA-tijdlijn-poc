@@ -81,6 +81,7 @@ export default function Home() {
           <div>
             <h1 className="text-2xl font-bold mb-5">Documenten</h1>
             <p>
+              
               Alle Woo-documenten in deze dataset zijn ook doorzoekbaar met een zoekopdracht.
               Per document is er metadata te raadplegen zoals de samenvatting, betrokken personen of organisaties, en de gekoppelde onderwerpen.
               <br /><br />
