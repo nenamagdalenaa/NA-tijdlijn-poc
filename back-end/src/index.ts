@@ -20,7 +20,7 @@ async function startServer() {
   app.use(
     '/graphql',
     cors({
-      origin: 'http://localhost:3000',
+      origin: 'https://na-tijdlijn-poc.vercel.app',
     }),
     bodyParser.json(),
     expressMiddleware(server, {
