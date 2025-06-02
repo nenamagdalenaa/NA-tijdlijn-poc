@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import TimelineCard from "@/components/timeline/TimelineCard";
 import Filter from "@/components/filter/Filter";
 import { GET_TIMELINE, GET_ENTITIES } from "@/graphql/queries/queries";
-import { Event } from "@/graphql/generated/graphql";
+import { Event, FilterOptions } from "@/graphql/generated/graphql";
 
 export default function Timelines() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,7 +23,7 @@ export default function Timelines() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const filterOptions: any = {
+    const filterOptions: FilterOptions = {
       query: searchTerm.trim() || undefined,
       persons: selectedPersons,
       organizations: selectedOrganizations,
@@ -78,8 +78,7 @@ export default function Timelines() {
             }}
 
             onApply={() => {
-              console.log("Toepassen geklikt");
-              const filterOptions: any = {
+              const filterOptions: FilterOptions = {
                 query: searchTerm.trim() || undefined,
                 persons: selectedPersons,
                 organizations: selectedOrganizations,
@@ -87,9 +86,7 @@ export default function Timelines() {
                 startDate: dateRange.from?.toISOString().split("T")[0],
                 endDate: dateRange.to?.toISOString().split("T")[0],
               };
-
-              console.log("Filter options:", filterOptions);
-
+              
               getTimeline({
                 variables: { filterOptions }
               });

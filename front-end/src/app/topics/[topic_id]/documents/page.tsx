@@ -21,8 +21,8 @@ export default function Documents() {
         variables: { filterOptions: { topicId: topicId } },
         skip: !topicId,
     });
-    const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_ENTITIES);
-    const { data: topicData, loading: topicLoading, error: topicError } = useQuery(GET_TOPIC, {
+    const { data: entitiesData } = useQuery(GET_ENTITIES);
+    const { data: topicData } = useQuery(GET_TOPIC, {
         variables: { topicId: topicId },
         skip: !topicId,
     });

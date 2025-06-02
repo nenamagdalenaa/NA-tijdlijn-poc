@@ -1,5 +1,5 @@
 "use client";
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import React from "react";
 import TopicGrid from "@/components/topics/TopicGrid";
 import { GET_TOPICS } from '../../graphql/queries/queries';

@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -18,12 +21,14 @@ export default function Home() {
           <br /><br />
           Als testset is hiervoor een dataset gebruikt van{" "}
           <span className="font-bold">COVID-19 Woo-documenten</span> vanuit het{" "}
-          <span className="font-bold">Ministerie van Volksgezondheid, Welzijn en Sport
-          </span> gescraped van de website{" "}
-          <a href="https://open.minvws.nl/thema/covid-19"
+          <span className="font-bold">Ministerie van Volksgezondheid, Welzijn en Sport</span>{" "}
+          gescraped van de website{" "}
+          <a
+            href="https://open.minvws.nl/thema/covid-19"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:underline">
+            className="text-blue-500 hover:underline"
+          >
             open.minvws.nl/thema/covid-19
           </a>.
           <br />Dit Proof of Concept bevat{" "}
@@ -39,44 +44,50 @@ export default function Home() {
       </div>
 
       {/* Grid met 3 kolommen */}
-      <div className="m-6 mt-10 grid grid-cols-3 gap-4">
+      <div className="m-6 mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Onderwerpen */}
-        <a href="/topics" className="col-span-1 text-center bg-gray-300 p-4 hover:bg-gray-400 transition">
-          <h1 className="text-2xl font-bold mb-5">Onderwerpen</h1>
-          <p>
-            Om het doorzoeken gerichter te maken zijn door middel van Topic Modelling (AI) de documenten geclusterd op basis van overkoepelende onderwerpen.
-            Deze onderwerpen zijn te vinden onder het tabblad <span className="font-bold">Onderwerpen</span>.
-            <br /><br />
-            Elk onderwerp heeft een samenvatting en een top van meest voorkomende entiteiten (personen, organisaties en bevolkingsgroepen).
-            <br /><br />
-            Per onderwerp is er een tijdlijn gemaakt, waar doorheen gelopen kan worden, evenals filteropties om het doorzoeken te vergemakkelijken.
-          </p>
-        </a>
+        <Link href="/topics" className="col-span-1 text-center bg-gray-300 p-4 hover:bg-gray-400 transition">
+          <div>
+            <h1 className="text-2xl font-bold mb-5">Onderwerpen</h1>
+            <p>
+              Om het doorzoeken gerichter te maken zijn door middel van Topic Modelling (AI) de documenten geclusterd op basis van overkoepelende onderwerpen.
+              Deze onderwerpen zijn te vinden onder het tabblad <span className="font-bold">Onderwerpen</span>.
+              <br /><br />
+              Elk onderwerp heeft een samenvatting en een top van meest voorkomende entiteiten (personen, organisaties en bevolkingsgroepen).
+              <br /><br />
+              Per onderwerp is er een tijdlijn gemaakt, waar doorheen gelopen kan worden, evenals filteropties om het doorzoeken te vergemakkelijken.
+            </p>
+          </div>
+        </Link>
 
         {/* Tijdlijnen */}
-        <a href="/timelines" className="col-span-1 text-center bg-gray-300 p-4 hover:bg-gray-400 transition">
-          <h1 className="text-2xl font-bold mb-5">Tijdlijnen</h1>
-          <p>
-            Naast tijdlijnen per onderwerp kan er ook zelf gezocht worden met een zoekopdracht,
-            om op basis van samenhangende gebeurtenissen een tijdlijn te genereren.
-            <br /><br />
-            Er kan bijvoorbeeld gezocht worden op 'mondkapjes', 'vaccinatie' of 'quarantaine'.
-            Gebeurtenissen uit de documenten die overeenkomen met de zoekoprdacht worden vervolgens verzameld en chronologisch weergegeven.
-            <br /><br />
-            Ook hier zijn filteropties beschikbaar om het doorzoeken te vergemakkelijken.
-          </p>
-        </a>
+        <Link href="/timelines" className="col-span-1 text-center bg-gray-300 p-4 hover:bg-gray-400 transition">
+          <div>
+            <h1 className="text-2xl font-bold mb-5">Tijdlijnen</h1>
+            <p>
+              Naast tijdlijnen per onderwerp kan er ook zelf gezocht worden met een zoekopdracht,
+              om op basis van samenhangende gebeurtenissen een tijdlijn te genereren.
+              <br /><br />
+              Er kan bijvoorbeeld gezocht worden op &#39;mondkapjes&#39;, &#39;vaccinatie&#39; of &#39;quarantaine&#39;.
+              Gebeurtenissen uit de documenten die overeenkomen met de zoekopdracht worden vervolgens verzameld en chronologisch weergegeven.
+              <br /><br />
+              Ook hier zijn filteropties beschikbaar om het doorzoeken te vergemakkelijken.
+            </p>
+          </div>
+        </Link>
 
         {/* Documenten */}
-        <a href="/documents" className="col-span-1 text-center bg-gray-300 p-4 hover:bg-gray-400 transition">
-          <h1 className="text-2xl font-bold mb-5">Documenten</h1>
-          <p>
-            Alle Woo-documenten in deze dataset zijn ook doorzoekbaar met een zoekopdracht.
-            Per document is er metadata te raadplegen zoals de samenvatting, betrokken personen of organisaties, en de gekoppelde onderwerpen.
-            <br /><br />
-            Het originele document en het dossier waar het document deel van uitmaakt zijn ook te raadplegen.
-          </p>
-        </a>
+        <Link href="/documents" className="col-span-1 text-center bg-gray-300 p-4 hover:bg-gray-400 transition">
+          <div>
+            <h1 className="text-2xl font-bold mb-5">Documenten</h1>
+            <p>
+              Alle Woo-documenten in deze dataset zijn ook doorzoekbaar met een zoekopdracht.
+              Per document is er metadata te raadplegen zoals de samenvatting, betrokken personen of organisaties, en de gekoppelde onderwerpen.
+              <br /><br />
+              Het originele document en het dossier waar het document deel van uitmaakt zijn ook te raadplegen.
+            </p>
+          </div>
+        </Link>
       </div>
     </div>
   );

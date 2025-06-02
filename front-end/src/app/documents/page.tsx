@@ -4,7 +4,7 @@ import Filter from "@/components/filter/Filter";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { GET_ENTITIES, GET_DOCUMENTS } from "../../graphql/queries/queries";
-import { Document } from "@/graphql/generated/graphql";
+import { Document, FilterOptions } from "@/graphql/generated/graphql";
 
 export default function Documents() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,14 +14,14 @@ export default function Documents() {
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 
   const [getDocuments, { loading, data, error }] = useLazyQuery(GET_DOCUMENTS);
-  const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_ENTITIES);
+  const { data: entitiesData } = useQuery(GET_ENTITIES);
 
   const documents = data?.getDocuments ?? [];
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const filterOptions: any = {
+    const filterOptions: FilterOptions = {
       query: searchTerm.trim() || undefined,
       persons: selectedPersons,
       organizations: selectedOrganizations,
@@ -71,7 +71,7 @@ export default function Documents() {
               setSelectedGroups(groups);
             }}
             onApply={() => {
-              const filterOptions: any = {
+              const filterOptions: FilterOptions = {
                 query: searchTerm.trim() || undefined,
                 persons: selectedPersons,
                 organizations: selectedOrganizations,

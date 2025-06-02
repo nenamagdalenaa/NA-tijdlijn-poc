@@ -35,11 +35,6 @@ export type Document = {
   type?: Maybe<Scalars['String']['output']>;
 };
 
-export type DocumentFilterOptions = {
-  query?: InputMaybe<Scalars['String']['input']>;
-  topicId?: InputMaybe<Scalars['ID']['input']>;
-};
-
 export type Dossier = {
   __typename?: 'Dossier';
   decisionDate?: Maybe<Scalars['String']['output']>;
@@ -60,11 +55,28 @@ export type EntityCount = {
   name?: Maybe<Scalars['String']['output']>;
 };
 
+export type EntityGroups = {
+  __typename?: 'EntityGroups';
+  groups: Array<Group>;
+  organizations: Array<Organization>;
+  persons: Array<Person>;
+};
+
 export type Event = {
   __typename?: 'Event';
   date?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   document?: Maybe<Document>;
+};
+
+export type FilterOptions = {
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  groups?: InputMaybe<Array<Scalars['ID']['input']>>;
+  organizations?: InputMaybe<Array<Scalars['ID']['input']>>;
+  persons?: InputMaybe<Array<Scalars['ID']['input']>>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+  topicId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type Group = {
@@ -90,18 +102,9 @@ export type Person = {
 
 export type Query = {
   __typename?: 'Query';
-  documents: Array<Document>;
-  dossier?: Maybe<Dossier>;
-  events: Array<Event>;
   getDocuments: Array<Document>;
-  getGroupsByDocumentId: Array<Group>;
-  getOrganizationsByDocumentId: Array<Organization>;
-  getPersonsByDocumentId: Array<Person>;
-  getTimelineByQuery: Array<Event>;
-  getTimelineByTopic: Array<Event>;
-  groups: Array<Group>;
-  organizations: Array<Organization>;
-  people: Array<Person>;
+  getEntities: EntityGroups;
+  getTimeline: Array<Event>;
   topEntities: TopEntities;
   topEntitiesByTopic: TopEntities;
   topic?: Maybe<Topic>;
@@ -109,48 +112,13 @@ export type Query = {
 };
 
 
-export type QueryDossierArgs = {
-  dossierId: Scalars['String']['input'];
-};
-
-
-export type QueryEventsArgs = {
-  documentId: Scalars['String']['input'];
-};
-
-
 export type QueryGetDocumentsArgs = {
-  filterOptions?: InputMaybe<DocumentFilterOptions>;
+  filterOptions?: InputMaybe<FilterOptions>;
 };
 
 
-export type QueryGetGroupsByDocumentIdArgs = {
-  documentId: Scalars['ID']['input'];
-};
-
-
-export type QueryGetOrganizationsByDocumentIdArgs = {
-  documentId: Scalars['ID']['input'];
-};
-
-
-export type QueryGetPersonsByDocumentIdArgs = {
-  documentId: Scalars['ID']['input'];
-};
-
-
-export type QueryGetTimelineByQueryArgs = {
-  query: Scalars['String']['input'];
-};
-
-
-export type QueryGetTimelineByTopicArgs = {
-  endDate?: InputMaybe<Scalars['String']['input']>;
-  groups?: InputMaybe<Array<Scalars['String']['input']>>;
-  organizations?: InputMaybe<Array<Scalars['String']['input']>>;
-  persons?: InputMaybe<Array<Scalars['String']['input']>>;
-  startDate?: InputMaybe<Scalars['String']['input']>;
-  topicId: Scalars['ID']['input'];
+export type QueryGetTimelineArgs = {
+  filterOptions?: InputMaybe<FilterOptions>;
 };
 
 
@@ -198,10 +166,10 @@ export type GetTopicQueryVariables = Exact<{
 
 export type GetTopicQuery = { __typename?: 'Query', topic?: { __typename?: 'Topic', topicId: string, name?: string | null, summary?: string | null, topWords?: string | null } | null };
 
-export type GetTopEntitiesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetEntitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTopEntitiesQuery = { __typename?: 'Query', topEntities: { __typename?: 'TopEntities', persons: Array<{ __typename?: 'EntityCount', entityId?: string | null, name?: string | null, count: number }>, organizations: Array<{ __typename?: 'EntityCount', entityId?: string | null, name?: string | null, count: number }>, groups: Array<{ __typename?: 'EntityCount', entityId?: string | null, name?: string | null, count: number }> } };
+export type GetEntitiesQuery = { __typename?: 'Query', getEntities: { __typename?: 'EntityGroups', persons: Array<{ __typename?: 'Person', personId: string, name?: string | null }>, organizations: Array<{ __typename?: 'Organization', organizationId: string, name?: string | null }>, groups: Array<{ __typename?: 'Group', groupId: string, name?: string | null }> } };
 
 export type GetEntitiesByTopicQueryVariables = Exact<{
   topicId: Scalars['ID']['input'];
@@ -210,37 +178,24 @@ export type GetEntitiesByTopicQueryVariables = Exact<{
 
 export type GetEntitiesByTopicQuery = { __typename?: 'Query', topEntitiesByTopic: { __typename?: 'TopEntities', persons: Array<{ __typename?: 'EntityCount', entityId?: string | null, name?: string | null, count: number }>, organizations: Array<{ __typename?: 'EntityCount', entityId?: string | null, name?: string | null, count: number }>, groups: Array<{ __typename?: 'EntityCount', entityId?: string | null, name?: string | null, count: number }> } };
 
-export type GetTimelineByTopicQueryVariables = Exact<{
-  topicId: Scalars['ID']['input'];
-  persons?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
-  organizations?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
-  groups?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
-  startDate?: InputMaybe<Scalars['String']['input']>;
-  endDate?: InputMaybe<Scalars['String']['input']>;
+export type GetTimelineQueryVariables = Exact<{
+  filterOptions?: InputMaybe<FilterOptions>;
 }>;
 
 
-export type GetTimelineByTopicQuery = { __typename?: 'Query', getTimelineByTopic: Array<{ __typename?: 'Event', date?: string | null, description?: string | null, document?: { __typename?: 'Document', documentId: string, sourceUrl?: string | null, sourceType?: string | null, title?: string | null, persons: Array<{ __typename?: 'Person', personId: string, name?: string | null }>, organizations: Array<{ __typename?: 'Organization', organizationId: string, name?: string | null }>, groups: Array<{ __typename?: 'Group', groupId: string, name?: string | null }> } | null }> };
-
-export type GetTimelineByQueryQueryVariables = Exact<{
-  query: Scalars['String']['input'];
-}>;
-
-
-export type GetTimelineByQueryQuery = { __typename?: 'Query', getTimelineByQuery: Array<{ __typename?: 'Event', date?: string | null, description?: string | null, document?: { __typename?: 'Document', documentId: string, sourceUrl?: string | null, persons: Array<{ __typename?: 'Person', personId: string, name?: string | null }>, organizations: Array<{ __typename?: 'Organization', organizationId: string, name?: string | null }>, groups: Array<{ __typename?: 'Group', groupId: string, name?: string | null }> } | null }> };
+export type GetTimelineQuery = { __typename?: 'Query', getTimeline: Array<{ __typename?: 'Event', date?: string | null, description?: string | null, document?: { __typename?: 'Document', documentId: string, sourceUrl?: string | null, sourceType?: string | null, title?: string | null, persons: Array<{ __typename?: 'Person', personId: string, name?: string | null }>, organizations: Array<{ __typename?: 'Organization', organizationId: string, name?: string | null }>, groups: Array<{ __typename?: 'Group', groupId: string, name?: string | null }> } | null }> };
 
 export type GetDocumentsQueryVariables = Exact<{
-  filterOptions?: InputMaybe<DocumentFilterOptions>;
+  filterOptions?: InputMaybe<FilterOptions>;
 }>;
 
 
-export type GetDocumentsQuery = { __typename?: 'Query', getDocuments: Array<{ __typename?: 'Document', documentId: string, title?: string | null, summary?: string | null, sourceUrl?: string | null, dossier?: { __typename?: 'Dossier', dossierId: string, title?: string | null, sourceUrl?: string | null } | null, topics: Array<{ __typename?: 'TopicAssignment', topicId: string, name?: string | null, probability?: number | null }> }> };
+export type GetDocumentsQuery = { __typename?: 'Query', getDocuments: Array<{ __typename?: 'Document', documentId: string, title?: string | null, summary?: string | null, sourceUrl?: string | null, scrapedDate?: string | null, dossier?: { __typename?: 'Dossier', dossierId: string, title?: string | null, sourceUrl?: string | null } | null, topics: Array<{ __typename?: 'TopicAssignment', topicId: string, name?: string | null, probability?: number | null }>, persons: Array<{ __typename?: 'Person', personId: string, name?: string | null }>, organizations: Array<{ __typename?: 'Organization', organizationId: string, name?: string | null }>, groups: Array<{ __typename?: 'Group', groupId: string, name?: string | null }> }> };
 
 
 export const GetTopicsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTopics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"topics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"topicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"topWords"}}]}}]}}]} as unknown as DocumentNode<GetTopicsQuery, GetTopicsQueryVariables>;
 export const GetTopicDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTopic"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"topicId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"topic"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"topicId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"topicId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"topicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"topWords"}}]}}]}}]} as unknown as DocumentNode<GetTopicQuery, GetTopicQueryVariables>;
-export const GetTopEntitiesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTopEntities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"topEntities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"persons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entityId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}},{"kind":"Field","name":{"kind":"Name","value":"organizations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entityId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}},{"kind":"Field","name":{"kind":"Name","value":"groups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entityId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetTopEntitiesQuery, GetTopEntitiesQueryVariables>;
+export const GetEntitiesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEntities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getEntities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"persons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"organizations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"organizationId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"groups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"groupId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetEntitiesQuery, GetEntitiesQueryVariables>;
 export const GetEntitiesByTopicDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEntitiesByTopic"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"topicId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"topEntitiesByTopic"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"topicId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"topicId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"persons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entityId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}},{"kind":"Field","name":{"kind":"Name","value":"organizations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entityId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}},{"kind":"Field","name":{"kind":"Name","value":"groups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entityId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetEntitiesByTopicQuery, GetEntitiesByTopicQueryVariables>;
-export const GetTimelineByTopicDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimelineByTopic"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"topicId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"persons"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"organizations"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"groups"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getTimelineByTopic"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"topicId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"topicId"}}},{"kind":"Argument","name":{"kind":"Name","value":"persons"},"value":{"kind":"Variable","name":{"kind":"Name","value":"persons"}}},{"kind":"Argument","name":{"kind":"Name","value":"organizations"},"value":{"kind":"Variable","name":{"kind":"Name","value":"organizations"}}},{"kind":"Argument","name":{"kind":"Name","value":"groups"},"value":{"kind":"Variable","name":{"kind":"Name","value":"groups"}}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"document"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"documentId"}},{"kind":"Field","name":{"kind":"Name","value":"sourceUrl"}},{"kind":"Field","name":{"kind":"Name","value":"sourceType"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"persons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"organizations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"organizationId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"groups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"groupId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<GetTimelineByTopicQuery, GetTimelineByTopicQueryVariables>;
-export const GetTimelineByQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimelineByQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"query"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getTimelineByQuery"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"Variable","name":{"kind":"Name","value":"query"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"document"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"documentId"}},{"kind":"Field","name":{"kind":"Name","value":"sourceUrl"}},{"kind":"Field","name":{"kind":"Name","value":"persons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"organizations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"organizationId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"groups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"groupId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<GetTimelineByQueryQuery, GetTimelineByQueryQueryVariables>;
-export const GetDocumentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDocuments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filterOptions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DocumentFilterOptions"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getDocuments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filterOptions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filterOptions"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"documentId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"sourceUrl"}},{"kind":"Field","name":{"kind":"Name","value":"dossier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dossierId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"sourceUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"topics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"topicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"probability"}}]}}]}}]}}]} as unknown as DocumentNode<GetDocumentsQuery, GetDocumentsQueryVariables>;
+export const GetTimelineDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimeline"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filterOptions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"FilterOptions"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getTimeline"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filterOptions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filterOptions"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"document"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"documentId"}},{"kind":"Field","name":{"kind":"Name","value":"sourceUrl"}},{"kind":"Field","name":{"kind":"Name","value":"sourceType"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"persons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"organizations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"organizationId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"groups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"groupId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<GetTimelineQuery, GetTimelineQueryVariables>;
+export const GetDocumentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDocuments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filterOptions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"FilterOptions"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getDocuments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filterOptions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filterOptions"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"documentId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"sourceUrl"}},{"kind":"Field","name":{"kind":"Name","value":"scrapedDate"}},{"kind":"Field","name":{"kind":"Name","value":"dossier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dossierId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"sourceUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"topics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"topicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"probability"}}]}},{"kind":"Field","name":{"kind":"Name","value":"persons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"organizations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"organizationId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"groups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"groupId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetDocumentsQuery, GetDocumentsQueryVariables>;

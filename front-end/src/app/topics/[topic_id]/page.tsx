@@ -9,19 +9,25 @@ const TopicPage = () => {
   const params = useParams();
   const topicId = params?.topic_id as string;
 
-  if (!topicId) return <div>Loading topic...</div>;
-
-  const { data: topicData, loading: topicLoading, error: topicError } = useQuery(GET_TOPIC, {
-    variables: { topicId: topicId },
-    skip: !topicId,
-  });
-
-  const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_ENTITIES_BY_TOPIC, {
+  const {
+    data: topicData,
+    loading: topicLoading,
+    error: topicError,
+  } = useQuery(GET_TOPIC, {
     variables: { topicId },
     skip: !topicId,
   });
 
-  if (topicLoading || entitiesLoading) return <div>Loading...</div>;
+  const {
+    data: entitiesData,
+    loading: entitiesLoading,
+    error: entitiesError,
+  } = useQuery(GET_ENTITIES_BY_TOPIC, {
+    variables: { topicId },
+    skip: !topicId,
+  });
+
+  if (!topicId || topicLoading || entitiesLoading) return <div>Loading...</div>;
   if (topicError) return <div>Error loading topic: {topicError.message}</div>;
   if (entitiesError) return <div>Error loading entities: {entitiesError.message}</div>;
 

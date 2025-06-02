@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import TimelineCard from "@/components/timeline/TimelineCard";
 import Filter from "@/components/filter/Filter";
 import { GET_TOPIC, GET_ENTITIES, GET_TIMELINE } from "../../../../graphql/queries/queries";
@@ -23,11 +23,11 @@ const TimelinePage = () => {
     variables: { filterOptions: { topicId: topicId } },
     skip: !topicId,
   });
-  const { data: topicData, loading: topicLoading, error: topicError } = useQuery(GET_TOPIC, {
+  const { data: topicData, error: topicError } = useQuery(GET_TOPIC, {
     variables: { topicId: topicId },
     skip: !topicId,
   });
-  const { data: entitiesData, loading: entitiesLoading, error: entitiesError } = useQuery(GET_ENTITIES, {
+  const { data: entitiesData, error: entitiesError } = useQuery(GET_ENTITIES, {
     variables: { topicId },
     skip: !topicId,
   });
