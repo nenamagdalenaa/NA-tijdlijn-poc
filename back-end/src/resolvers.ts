@@ -240,19 +240,34 @@ export const resolvers = {
 
       const joins = [
         `JOIN document d ON e.document_id = d.document_id`,
-        topicId ? `JOIN document_topic dt ON d.document_id = dt.document_id` : '',
+        topicId
+          ? `JOIN (
+          SELECT document_id, topic_id, probability
+          FROM (
+            SELECT *,
+                   ROW_NUMBER() OVER (PARTITION BY document_id ORDER BY probability DESC) AS rank
+            FROM document_topic
+          ) ranked
+          WHERE rank = 1
+        ) dt ON d.document_id = dt.document_id`
+          : '',
         `LEFT JOIN document_person dp ON d.document_id = dp.document_id`,
         `LEFT JOIN document_organization dorg ON d.document_id = dorg.document_id`,
         `LEFT JOIN document_group dg ON d.document_id = dg.document_id`,
       ].filter(Boolean).join('\n');
 
       const querySQL = `
-    SELECT DISTINCT e.document_id, e.date, e.description, d.sourceurl, d.title, d.sourcetype
-    FROM event e
-    ${joins}
-    ${whereSQL}
-    ORDER BY e.date ASC;
-  `;
+        WITH ranked_topics AS (
+          SELECT document_id, topic_id, probability,
+                ROW_NUMBER() OVER (PARTITION BY document_id ORDER BY probability DESC) AS rank
+          FROM document_topic
+        )
+        SELECT DISTINCT e.document_id, e.date, e.description, d.sourceurl, d.title, d.sourcetype
+        FROM event e
+        ${joins}
+        ${whereSQL}
+        ORDER BY e.date ASC;
+      `;
 
       const result = await pool.query(querySQL, values);
 
