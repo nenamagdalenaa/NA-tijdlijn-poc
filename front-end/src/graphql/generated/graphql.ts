@@ -77,6 +77,7 @@ export type FilterOptions = {
   query?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['String']['input']>;
   topicId?: InputMaybe<Scalars['ID']['input']>;
+  topics?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
 export type Group = {

@@ -295,11 +295,12 @@ export const resolvers = {
           persons?: string[];
           organizations?: string[];
           groups?: string[];
+          topics?: string[];
           limit?: number;
         };
       }
     ) => {
-      const { query, topicId, persons = [], organizations = [], groups = [], limit = 100 } = filterOptions || {};
+      const { query, topicId, persons = [], organizations = [], groups = [], topics= [], limit = 100 } = filterOptions || {};
 
       const filters: string[] = [];
       const params: any[] = [];

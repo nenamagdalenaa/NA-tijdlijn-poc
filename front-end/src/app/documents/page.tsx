@@ -3,7 +3,7 @@ import DocumentCard from "@/components/documents/DocumentCard";
 import Filter from "@/components/filter/Filter";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import React, { useState } from "react";
-import { GET_ENTITIES, GET_DOCUMENTS } from "../../graphql/queries/queries";
+import { GET_ENTITIES, GET_DOCUMENTS, GET_TOPICS } from "../../graphql/queries/queries";
 import { Document, FilterOptions } from "@/graphql/generated/graphql";
 
 export default function Documents() {
@@ -12,9 +12,11 @@ export default function Documents() {
   const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
   const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
 
   const [getDocuments, { loading, data, error }] = useLazyQuery(GET_DOCUMENTS);
   const { data: entitiesData } = useQuery(GET_ENTITIES);
+  const { data: topicsData } = useQuery(GET_TOPICS);
 
   const documents = data?.getDocuments ?? [];
 
@@ -61,14 +63,18 @@ export default function Documents() {
             persons={entitiesData.getEntities.persons}
             organizations={entitiesData.getEntities.organizations}
             groups={entitiesData.getEntities.groups}
+            topics={topicsData.topics}
             showDateRange={false}
+            showTopics={true}
             selectedPersons={selectedPersons}
             selectedOrganizations={selectedOrganizations}
             selectedGroups={selectedGroups}
-            onFilterChange={({ persons, organizations, groups }) => {
+            selectedTopics={selectedTopics}
+            onFilterChange={({ persons, organizations, groups, topics }) => {
               setSelectedPersons(persons);
               setSelectedOrganizations(organizations);
               setSelectedGroups(groups);
+              setSelectedTopics(topics);
             }}
             onApply={() => {
               const filterOptions: FilterOptions = {
@@ -76,6 +82,7 @@ export default function Documents() {
                 persons: selectedPersons,
                 organizations: selectedOrganizations,
                 groups: selectedGroups,
+                topics: selectedTopics,
               };
 
               getDocuments({

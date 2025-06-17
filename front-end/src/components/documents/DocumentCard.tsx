@@ -105,8 +105,6 @@ export default function DocumentCard({ document }: { document: Document }) {
                 );
               })}
             </ul>
-
-
           </div>
         </div>
       </div>

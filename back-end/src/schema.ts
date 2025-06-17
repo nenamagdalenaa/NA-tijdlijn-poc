@@ -96,6 +96,7 @@ export const typeDefs = gql`
     groups: [ID!]
     startDate: String
     endDate: String
+    topics: [ID!]
   }
 
   type EntityGroups {

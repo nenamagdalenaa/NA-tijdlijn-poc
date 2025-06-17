@@ -39,7 +39,7 @@ export default function Documents() {
     };
 
     const topicName = topicData?.topic.name || "";
-    
+
     return (
         <div>
             <main className="p-7">
@@ -59,6 +59,7 @@ export default function Documents() {
                                 selectedOrganizations={selectedOrganizations}
                                 selectedGroups={selectedGroups}
                                 showDateRange={false}
+                                showTopics={false}
                                 onFilterChange={({ persons, organizations, groups }) => {
                                     setSelectedPersons(persons);
                                     setSelectedOrganizations(organizations);

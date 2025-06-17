@@ -65,6 +65,7 @@ const TimelinePage = () => {
           selectedOrganizations={selectedOrganizations}
           selectedGroups={selectedGroups}
           showDateRange={true}
+          showTopics={false}
           dateRange={dateRange}
           onFilterChange={({ persons, organizations, groups, dateRange }) => {
             setSelectedPersons(persons);

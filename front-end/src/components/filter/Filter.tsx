@@ -3,27 +3,33 @@ import DateRangeFilter from './DateFilter';
 import EntityFilter from './EntityFilter';
 
 type FilterProps = {
-    persons?: Array<{ personId: string; name: string; }>;
-    organizations?: Array<{ organizationId: string; name: string; }>;
-    groups?: Array<{ groupId: string; name: string; }>;
-    showDateRange?: boolean;
-    selectedPersons?: string[];
-    selectedOrganizations?: string[];
-    selectedGroups?: string[];
-    dateRange?: { from: Date | null; to: Date | null };
-    onFilterChange?: (filters: { persons: string[]; organizations: string[]; groups: string[]; dateRange: { from: Date | null; to: Date | null }; }) => void;
-    onApply?: () => void;
+  persons?: Array<{ personId: string; name: string; }>;
+  organizations?: Array<{ organizationId: string; name: string; }>;
+  groups?: Array<{ groupId: string; name: string; }>;
+  topics?: Array<{ topicId: string; name: string; }>;
+  showDateRange?: boolean;
+  showTopics?: boolean;
+  selectedPersons?: string[];
+  selectedOrganizations?: string[];
+  selectedGroups?: string[];
+  dateRange?: { from: Date | null; to: Date | null };
+  selectedTopics?: string[];
+  onFilterChange?: (filters: { persons: string[]; organizations: string[]; groups: string[]; dateRange: { from: Date | null; to: Date | null }; topics: string[]; }) => void;
+  onApply?: () => void;
 };
 
 export default function Filter({
   persons,
   organizations,
   groups,
+  topics,
   showDateRange,
+  showTopics,
   selectedPersons,
   selectedOrganizations,
   selectedGroups,
   dateRange,
+  selectedTopics,
   onFilterChange,
   onApply
 }: FilterProps) {
@@ -33,7 +39,8 @@ export default function Filter({
       persons: selectedPersons || [],
       organizations: selectedOrganizations || [],
       groups: selectedGroups || [],
-      dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null }, 
+      dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
+      topics: selectedTopics || [],
     });
 
     onApply?.();
@@ -42,7 +49,7 @@ export default function Filter({
   return (
     <div className='bg-gray-200 p-4 shadow-md'>
       <h2 className="text-xl font-bold mb-2">Filter</h2>
-      
+
       <EntityFilter
         title="Personen"
         prefix="person"
@@ -53,7 +60,8 @@ export default function Filter({
             persons: selected.map(id => id.split(':')[1]),
             organizations: selectedOrganizations || [],
             groups: selectedGroups || [],
-            dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null }
+            dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
+            topics: selectedTopics || [],
           })
         }
       />
@@ -67,7 +75,8 @@ export default function Filter({
             persons: selectedPersons || [],
             organizations: selected.map(id => id.split(':')[1]),
             groups: selectedGroups || [],
-            dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null }
+            dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
+            topics: selectedTopics || [],
           })
         }
       />
@@ -82,7 +91,8 @@ export default function Filter({
             persons: selectedPersons || [],
             organizations: selectedOrganizations || [],
             groups: selected.map(id => id.split(':')[1]),
-            dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null }
+            dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
+            topics: selectedTopics || [],
           })
         }
       />
@@ -91,17 +101,38 @@ export default function Filter({
         <>
           <h2 className="text-sm font-bold mt-2">Datum</h2>
           <div className="mt-2">
-            <DateRangeFilter 
-              from={dateRange?.from ?? null} 
-              to={dateRange?.to ?? null} 
+            <DateRangeFilter
+              from={dateRange?.from ?? null}
+              to={dateRange?.to ?? null}
               onChange={(range) => onFilterChange?.({
                 persons: selectedPersons || [],
                 organizations: selectedOrganizations || [],
                 groups: selectedGroups || [],
-                dateRange: { from: range.from ?? null, to: range.to ?? null }
+                dateRange: { from: range.from ?? null, to: range.to ?? null },
+                topics: selectedTopics || [],
               })}
             />
           </div>
+        </>
+      )}
+
+      {showTopics && (
+        <>
+          <EntityFilter
+            title="Topics"
+            prefix="topic"
+            entities={topics?.map(t => ({ id: t.topicId, name: t.name })) || []}
+            selected={selectedTopics?.map(id => `topic:${id}`) || []}
+            onChange={(selected) =>
+              onFilterChange?.({
+                persons: selectedPersons || [],
+                organizations: selectedOrganizations || [],
+                groups: selected.map(id => id.split(':')[1]),
+                dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
+                topics: selectedTopics || [],
+              })
+            }
+          />
         </>
       )}
 

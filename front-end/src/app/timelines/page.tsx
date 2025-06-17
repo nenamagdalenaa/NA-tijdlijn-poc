@@ -3,7 +3,7 @@ import { useLazyQuery, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import TimelineCard from "@/components/timeline/TimelineCard";
 import Filter from "@/components/filter/Filter";
-import { GET_TIMELINE, GET_ENTITIES } from "@/graphql/queries/queries";
+import { GET_TIMELINE, GET_ENTITIES, GET_TOPICS } from "@/graphql/queries/queries";
 import { Event, FilterOptions } from "@/graphql/generated/graphql";
 
 export default function Timelines() {
@@ -16,9 +16,11 @@ export default function Timelines() {
     from: null,
     to: null,
   });
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
 
   const [getTimeline, { loading, data, error }] = useLazyQuery(GET_TIMELINE);
   const { data: entitiesData } = useQuery(GET_ENTITIES);
+  const { data: topicsData } = useQuery(GET_TOPICS);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +30,7 @@ export default function Timelines() {
       persons: selectedPersons,
       organizations: selectedOrganizations,
       groups: selectedGroups,
+      topics: selectedTopics,
     };
 
     getTimeline({
@@ -65,16 +68,19 @@ export default function Timelines() {
             persons={entitiesData.getEntities.persons}
             organizations={entitiesData.getEntities.organizations}
             groups={entitiesData.getEntities.groups}
+            topics={topicsData.topics}
             selectedPersons={selectedPersons}
             selectedOrganizations={selectedOrganizations}
             selectedGroups={selectedGroups}
             showDateRange={true}
+            showTopics={true}
             dateRange={dateRange}
-            onFilterChange={({ persons, organizations, groups, dateRange }) => {
+            onFilterChange={({ persons, organizations, groups, dateRange, topics }) => {
               setSelectedPersons(persons);
               setSelectedOrganizations(organizations);
               setSelectedGroups(groups);
               setDateRange(dateRange);
+              setSelectedTopics(topics);
             }}
 
             onApply={() => {
@@ -85,6 +91,7 @@ export default function Timelines() {
                 groups: selectedGroups,
                 startDate: dateRange.from?.toISOString().split("T")[0],
                 endDate: dateRange.to?.toISOString().split("T")[0],
+                topics: selectedTopics,
               };
               
               getTimeline({
