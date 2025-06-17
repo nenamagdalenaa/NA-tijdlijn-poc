@@ -42,6 +42,7 @@ export default function Filter({
       dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
       topics: selectedTopics || [],
     });
+    console.log("Selected topic IDs from EntityFilter:", topics);
 
     onApply?.();
   };
