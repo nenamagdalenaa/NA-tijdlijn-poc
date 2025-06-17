@@ -177,6 +177,7 @@ export const resolvers = {
           groups?: string[];
           startDate?: string;
           endDate?: string;
+          topics?: string[];
         };
       }
     ) => {
@@ -188,6 +189,7 @@ export const resolvers = {
         groups,
         startDate,
         endDate,
+        topics,
       } = filterOptions;
 
       const values: any[] = [];
@@ -224,6 +226,12 @@ export const resolvers = {
         idx++;
       }
 
+      if (topics && topics.length > 0) {
+        whereClauses.push(`dt.topic_id = ANY($${idx})`);
+        values.push(topics);
+        idx++;
+      }
+
       if (startDate) {
         whereClauses.push(`e.date >= $${idx}::date`);
         values.push(startDate);
@@ -240,17 +248,19 @@ export const resolvers = {
 
       const joins = [
         `JOIN document d ON e.document_id = d.document_id`,
-        topicId
-          ? `JOIN (
-          SELECT document_id, topic_id, probability
-          FROM (
-            SELECT *,
-                   ROW_NUMBER() OVER (PARTITION BY document_id ORDER BY probability DESC) AS rank
-            FROM document_topic
-          ) ranked
-          WHERE rank = 1
-        ) dt ON d.document_id = dt.document_id`
-          : '',
+        (query && topics && topics.length > 0)
+          ? `JOIN document_topic dt ON d.document_id = dt.document_id`
+          : topicId
+            ? `JOIN (
+            SELECT document_id, topic_id, probability
+            FROM (
+              SELECT *,
+                    ROW_NUMBER() OVER (PARTITION BY document_id ORDER BY probability DESC) AS rank
+              FROM document_topic
+            ) ranked
+            WHERE rank = 1
+          ) dt ON d.document_id = dt.document_id`
+            : '',
         `LEFT JOIN document_person dp ON d.document_id = dp.document_id`,
         `LEFT JOIN document_organization dorg ON d.document_id = dorg.document_id`,
         `LEFT JOIN document_group dg ON d.document_id = dg.document_id`,
@@ -300,17 +310,32 @@ export const resolvers = {
         };
       }
     ) => {
-      const { query, topicId, persons = [], organizations = [], groups = [], topics= [], limit = 100 } = filterOptions || {};
+      const {
+        query,
+        topicId,
+        persons = [],
+        organizations = [],
+        groups = [],
+        topics = [],
+        limit = 100,
+      } = filterOptions || {};
 
       const filters: string[] = [];
       const params: any[] = [];
 
       if (topicId) {
         params.push(topicId);
-        filters.push(`t.topic_id = $${params.length}`);
+        filters.push(`dt.topic_id = $${params.length}`);
       } else if (query) {
         params.push(query);
-        filters.push(`to_tsvector('dutch', d.title || ' ' || coalesce(d.summary, '')) @@ plainto_tsquery('dutch', $${params.length})`);
+        filters.push(
+          `to_tsvector('dutch', d.title || ' ' || coalesce(d.summary, '')) @@ plainto_tsquery('dutch', $${params.length})`
+        );
+
+        if (topics.length > 0) {
+          params.push(topics);
+          filters.push(`dt.topic_id = ANY($${params.length})`);
+        }
       } else {
         throw new Error("filterOptions must contain either 'query' or 'topicId'");
       }
@@ -330,24 +355,30 @@ export const resolvers = {
         filters.push(`dg.group_id = ANY($${params.length})`);
       }
 
-      const filterSQL = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
-      params.push(limit);
+      const filterSQL = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
+
+      // 2. joins
+      const dtJoin =
+        topicId || (query && topics.length > 0)
+          ? `JOIN document_topic dt ON d.document_id = dt.document_id`
+          : "";
 
       const joins = `
-    LEFT JOIN document_person dp ON d.document_id = dp.document_id
-    LEFT JOIN document_organization dorg ON d.document_id = dorg.document_id
-    LEFT JOIN document_group dg ON d.document_id = dg.document_id
-    JOIN document_topic dt ON d.document_id = dt.document_id
-    JOIN topic t ON dt.topic_id = t.topic_id
-  `;
+        ${dtJoin}
+        LEFT JOIN document_person dp ON d.document_id = dp.document_id
+        LEFT JOIN document_organization dorg ON d.document_id = dorg.document_id
+        LEFT JOIN document_group dg ON d.document_id = dg.document_id
+      `;
+
+      params.push(limit);
 
       const sql = `
-    SELECT DISTINCT d.document_id, d.title, d.summary, d.sourceurl, d.dossier_id, d.date_scraped
-    FROM document d
-    ${joins}
-    ${filterSQL}
-    LIMIT $${params.length}
-  `;
+        SELECT DISTINCT d.document_id, d.title, d.summary, d.sourceurl, d.dossier_id, d.date_scraped
+        FROM document d
+        ${joins}
+        ${filterSQL}
+        LIMIT $${params.length}
+      `;
 
       const result = await pool.query(sql, params);
 
@@ -360,6 +391,7 @@ export const resolvers = {
         dossierId: row.dossier_id,
       }));
     },
+
 
   },
   Document: {
