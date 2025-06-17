@@ -4,6 +4,12 @@ import React from "react";
 import { Document } from "@/graphql/generated/graphql";
 import ExternalLinkIcon from "./LinkIcon";
 
+function getConfidenceColor(prob: number): 'red' | 'orange' | 'green' {
+  if (prob >= 0.3) return 'green';
+  if (prob >= 0.05) return 'orange';
+  return 'red';
+}
+
 export default function DocumentCard({ document }: { document: Document }) {
   return (
     <div className="bg-[#e6effa] p-4 shadow mb-4 relative">
@@ -77,15 +83,27 @@ export default function DocumentCard({ document }: { document: Document }) {
             </div>
             <p className="font-semibold mt-2 mb-1 underline">Topic zekerheid</p>
             <ul className="list-disc pl-5">
-              {document.topics.map((topic, index) => (
-                <li key={topic.topicId ?? index}>
-                  <strong>{topic.name}</strong>:{" "}
-                  {topic.probability != null
-                    ? `${(topic.probability * 100).toFixed(1)}%`
-                    : "Onbekend"}
-                </li>
-              ))}
+              {document.topics.map((topic, index) => {
+                const prob = topic.probability ?? 0;
+                const color = getConfidenceColor(prob);
+
+                return (
+                  <li key={topic.topicId ?? index} className="flex items-center gap-2">
+                    <strong>{topic.name}</strong>:
+                    <span
+                      className={`w-2.5 h-2.5 rounded-full inline-block ${color === 'green' ? 'bg-green-500' : color === 'orange' ? 'bg-orange-400' : 'bg-red-500'}`}
+                      title={`Zekerheid: ${(prob * 100).toFixed(1)}%`}
+                    />
+                    <span>
+                      {topic.probability != null
+                        ? `(${(prob * 100).toFixed(1)}%)`
+                        : "Onbekend"}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
+
           </div>
         </div>
       </div>
