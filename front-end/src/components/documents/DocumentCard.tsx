@@ -5,8 +5,8 @@ import { Document } from "@/graphql/generated/graphql";
 import ExternalLinkIcon from "./LinkIcon";
 
 function getConfidenceColor(prob: number): 'red' | 'orange' | 'green' {
-  if (prob >= 0.3) return 'green';
-  if (prob >= 0.05) return 'orange';
+  if (prob >= 0.15) return 'green';
+  if (prob >= 0.03) return 'orange';
   return 'red';
 }
 
@@ -82,27 +82,31 @@ export default function DocumentCard({ document }: { document: Document }) {
               {document?.groups?.map((g) => g.name).join(", ") || <em>Geen</em>} <br />
             </div>
             <p className="font-semibold mt-2 mb-1 underline">Topic zekerheid</p>
-            <ul className="list-disc pl-5">
+            <ul className="list-disc pl-5 space-y-1">
               {document.topics.map((topic, index) => {
                 const prob = topic.probability ?? 0;
                 const color = getConfidenceColor(prob);
 
                 return (
-                  <li key={topic.topicId ?? index} className="flex items-center gap-2">
-                    <strong>{topic.name}</strong>:
+                  <li key={topic.topicId ?? index}>
+                    <span className="font-semibold">{topic.name}</span>{" "}
                     <span
-                      className={`w-2.5 h-2.5 rounded-full inline-block ${color === 'green' ? 'bg-green-500' : color === 'orange' ? 'bg-orange-400' : 'bg-red-500'}`}
+                      className={`inline-block w-2.5 h-2.5 rounded-full align-middle mx-1 ${color === "green"
+                          ? "bg-green-500"
+                          : color === "orange"
+                            ? "bg-orange-400"
+                            : "bg-red-500"
+                        }`}
                       title={`Zekerheid: ${(prob * 100).toFixed(1)}%`}
                     />
-                    <span>
-                      {topic.probability != null
-                        ? `(${(prob * 100).toFixed(1)}%)`
-                        : "Onbekend"}
+                    <span className="text-gray-700">
+                      ({(prob * 100).toFixed(1)}%)
                     </span>
                   </li>
                 );
               })}
             </ul>
+
 
           </div>
         </div>
