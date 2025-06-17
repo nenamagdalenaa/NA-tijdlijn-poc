@@ -42,7 +42,6 @@ export default function Filter({
       dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
       topics: selectedTopics || [],
     });
-    console.log("Selected topic IDs from EntityFilter:", topics);
 
     onApply?.();
   };
@@ -122,8 +121,8 @@ export default function Filter({
           <EntityFilter
             title="Topics"
             prefix="topic"
-            entities={topics?.map(t => ({ id: t.topicId, name: t.name })) || []}
-            selected={selectedTopics?.map(id => `topic:${id}`) || []}
+            entities={topics?.map(t => ({ id: String(t.topicId), name: t.name })) || []}
+            selected={selectedTopics?.map(id => `topic:${String(id)}`) || []}
             onChange={(selected) =>
               onFilterChange?.({
                 persons: selectedPersons || [],
