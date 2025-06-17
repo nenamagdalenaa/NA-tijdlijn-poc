@@ -127,9 +127,9 @@ export default function Filter({
               onFilterChange?.({
                 persons: selectedPersons || [],
                 organizations: selectedOrganizations || [],
-                groups: selected.map(id => id.split(':')[1]),
+                groups: selectedGroups || [],
                 dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
-                topics: selectedTopics || [],
+                topics: selected.map(id => id.split(':')[1]),
               })
             }
           />

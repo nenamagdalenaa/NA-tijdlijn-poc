@@ -63,7 +63,7 @@ export default function Timelines() {
           </button>
         </form>
 
-        {entitiesData && (
+        {entitiesData && topicsData && (
           <Filter
             persons={entitiesData.getEntities.persons}
             organizations={entitiesData.getEntities.organizations}
