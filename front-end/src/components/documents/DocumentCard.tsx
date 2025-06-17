@@ -89,7 +89,7 @@ export default function DocumentCard({ document }: { document: Document }) {
 
                 return (
                   <li key={topic.topicId ?? index}>
-                    <span className="font-semibold">{topic.name}</span>{" "}
+                    <span className="font-semibold">{topic.name}</span>{" ("}
                     <span
                       className={`inline-block w-2.5 h-2.5 rounded-full align-middle mx-1 ${color === "green"
                           ? "bg-green-500"
@@ -97,10 +97,9 @@ export default function DocumentCard({ document }: { document: Document }) {
                             ? "bg-orange-400"
                             : "bg-red-500"
                         }`}
-                      title={`Zekerheid: ${(prob * 100).toFixed(1)}%`}
                     />
                     <span className="text-gray-700">
-                      ({(prob * 100).toFixed(1)}%)
+                      {(prob * 100).toFixed(1)}%{")"}
                     </span>
                   </li>
                 );
