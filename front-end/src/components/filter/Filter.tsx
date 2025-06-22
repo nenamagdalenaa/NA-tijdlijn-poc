@@ -1,12 +1,12 @@
-import React from 'react';
-import DateRangeFilter from './DateFilter';
-import EntityFilter from './EntityFilter';
+import React from "react";
+import DateRangeFilter from "./DateFilter";
+import EntityFilter from "./EntityFilter";
 
 type FilterProps = {
-  persons?: Array<{ personId: string; name: string; }>;
-  organizations?: Array<{ organizationId: string; name: string; }>;
-  groups?: Array<{ groupId: string; name: string; }>;
-  topics?: Array<{ topicId: string; name: string; }>;
+  persons?: Array<{ personId: string; name: string }>;
+  organizations?: Array<{ organizationId: string; name: string }>;
+  groups?: Array<{ groupId: string; name: string }>;
+  topics?: Array<{ topicId: string; name: string }>;
   showDateRange?: boolean;
   showTopics?: boolean;
   selectedPersons?: string[];
@@ -14,7 +14,13 @@ type FilterProps = {
   selectedGroups?: string[];
   dateRange?: { from: Date | null; to: Date | null };
   selectedTopics?: string[];
-  onFilterChange?: (filters: { persons: string[]; organizations: string[]; groups: string[]; dateRange: { from: Date | null; to: Date | null }; topics: string[]; }) => void;
+  onFilterChange?: (filters: {
+    persons: string[];
+    organizations: string[];
+    groups: string[];
+    dateRange: { from: Date | null; to: Date | null };
+    topics: string[];
+  }) => void;
   onApply?: () => void;
 };
 
@@ -31,9 +37,8 @@ export default function Filter({
   dateRange,
   selectedTopics,
   onFilterChange,
-  onApply
+  onApply,
 }: FilterProps) {
-
   const handleApplyFilters = () => {
     onFilterChange?.({
       persons: selectedPersons || [],
@@ -42,25 +47,29 @@ export default function Filter({
       dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
       topics: selectedTopics || [],
     });
+    console.log(topics);
 
     onApply?.();
   };
 
   return (
-    <div className='bg-gray-200 p-4 shadow-md'>
+    <div className="bg-gray-200 p-4 shadow-md">
       <h2 className="text-xl font-bold mb-2">Filter</h2>
 
       <EntityFilter
         title="Personen"
         prefix="person"
-        entities={persons?.map(p => ({ id: p.personId, name: p.name })) || []}
-        selected={selectedPersons?.map(id => `person:${id}`) || []}
+        entities={persons?.map((p) => ({ id: p.personId, name: p.name })) || []}
+        selected={selectedPersons?.map((id) => `person:${id}`) || []}
         onChange={(selected) =>
           onFilterChange?.({
-            persons: selected.map(id => id.split(':')[1]),
+            persons: selected.map((id) => id.split(":")[1]),
             organizations: selectedOrganizations || [],
             groups: selectedGroups || [],
-            dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
+            dateRange: {
+              from: dateRange?.from ?? null,
+              to: dateRange?.to ?? null,
+            },
             topics: selectedTopics || [],
           })
         }
@@ -68,14 +77,20 @@ export default function Filter({
       <EntityFilter
         title="Organisaties"
         prefix="org"
-        entities={organizations?.map(o => ({ id: o.organizationId, name: o.name })) || []}
-        selected={selectedOrganizations?.map(id => `org:${id}`) || []}
+        entities={
+          organizations?.map((o) => ({ id: o.organizationId, name: o.name })) ||
+          []
+        }
+        selected={selectedOrganizations?.map((id) => `org:${id}`) || []}
         onChange={(selected) =>
           onFilterChange?.({
             persons: selectedPersons || [],
-            organizations: selected.map(id => id.split(':')[1]),
+            organizations: selected.map((id) => id.split(":")[1]),
             groups: selectedGroups || [],
-            dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
+            dateRange: {
+              from: dateRange?.from ?? null,
+              to: dateRange?.to ?? null,
+            },
             topics: selectedTopics || [],
           })
         }
@@ -84,14 +99,17 @@ export default function Filter({
       <EntityFilter
         title="Bevolkingsgroepen"
         prefix="group"
-        entities={groups?.map(g => ({ id: g.groupId, name: g.name })) || []}
-        selected={selectedGroups?.map(id => `group:${id}`) || []}
+        entities={groups?.map((g) => ({ id: g.groupId, name: g.name })) || []}
+        selected={selectedGroups?.map((id) => `group:${id}`) || []}
         onChange={(selected) =>
           onFilterChange?.({
             persons: selectedPersons || [],
             organizations: selectedOrganizations || [],
-            groups: selected.map(id => id.split(':')[1]),
-            dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
+            groups: selected.map((id) => id.split(":")[1]),
+            dateRange: {
+              from: dateRange?.from ?? null,
+              to: dateRange?.to ?? null,
+            },
             topics: selectedTopics || [],
           })
         }
@@ -104,13 +122,15 @@ export default function Filter({
             <DateRangeFilter
               from={dateRange?.from ?? null}
               to={dateRange?.to ?? null}
-              onChange={(range) => onFilterChange?.({
-                persons: selectedPersons || [],
-                organizations: selectedOrganizations || [],
-                groups: selectedGroups || [],
-                dateRange: { from: range.from ?? null, to: range.to ?? null },
-                topics: selectedTopics || [],
-              })}
+              onChange={(range) =>
+                onFilterChange?.({
+                  persons: selectedPersons || [],
+                  organizations: selectedOrganizations || [],
+                  groups: selectedGroups || [],
+                  dateRange: { from: range.from ?? null, to: range.to ?? null },
+                  topics: selectedTopics || [],
+                })
+              }
             />
           </div>
         </>
@@ -119,28 +139,38 @@ export default function Filter({
       {showTopics && (
         <>
           <EntityFilter
-            title="Topics"
+            title="Onderwerpen"
             prefix="topic"
-            entities={topics?.map(t => ({ id: String(t.topicId), name: t.name })) || []}
-            selected={selectedTopics?.map(id => `topic:${String(id)}`) || []}
-            onChange={(selected) =>
+            entities={
+              topics?.map((t) => ({ id: String(t.topicId), name: t.name })) ||
+              []
+            }
+            selected={selectedTopics?.map((id) => `topic:${String(id)}`) || []}
+            onChange={(selected) => {
+              const newSelected = selected.map((id) => id.split(":")[1]);
+              console.log("Topics geselecteerd:", newSelected);
+
               onFilterChange?.({
                 persons: selectedPersons || [],
                 organizations: selectedOrganizations || [],
                 groups: selectedGroups || [],
-                dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
-                topics: selected.map(id => id.split(':')[1]),
-              })
-            }
+                dateRange: {
+                  from: dateRange?.from ?? null,
+                  to: dateRange?.to ?? null,
+                },
+                topics: selected.map((id) => id.split(":")[1]),
+              });
+            }}
           />
         </>
       )}
 
       <button
         onClick={handleApplyFilters}
-        className="mt-6 mb-2 p-2 bg-gray-400 font-bold hover:bg-gray-300">
+        className="mt-6 mb-2 p-2 bg-gray-400 font-bold hover:bg-gray-300"
+      >
         Toepassen
       </button>
     </div>
   );
-};
+}

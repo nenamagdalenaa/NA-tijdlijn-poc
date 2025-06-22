@@ -3,14 +3,20 @@ import DocumentCard from "@/components/documents/DocumentCard";
 import Filter from "@/components/filter/Filter";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import React, { useState } from "react";
-import { GET_ENTITIES, GET_DOCUMENTS, GET_TOPICS } from "../../graphql/queries/queries";
+import {
+  GET_ENTITIES,
+  GET_DOCUMENTS,
+  GET_TOPICS,
+} from "../../graphql/queries/queries";
 import { Document, FilterOptions } from "@/graphql/generated/graphql";
 
 export default function Documents() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
-  const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([]);
+  const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>(
+    []
+  );
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
 
@@ -31,7 +37,7 @@ export default function Documents() {
     };
 
     getDocuments({
-      variables: { filterOptions }
+      variables: { filterOptions },
     });
   };
 
@@ -40,7 +46,9 @@ export default function Documents() {
       {/* Linkerzijde: Titel, beschrijving, zoekveld, filters */}
       <div className="w-1/3 p-7 overflow-y-auto border-r border-gray-300 bg-white">
         <h1 className="font-extrabold text-4xl mb-2">Zoek in documenten</h1>
-        <p className="mb-6 text-gray-700">Zoek op een keyword om naar samenhangende documenten te zoeken.</p>
+        <p className="mb-6 text-gray-700">
+          Zoek op een keyword om naar samenhangende documenten te zoeken.
+        </p>
 
         <form onSubmit={handleSearch} className="mb-6">
           <input
@@ -58,7 +66,7 @@ export default function Documents() {
           </button>
         </form>
 
-        {entitiesData && (
+        {entitiesData && topicsData && (
           <Filter
             persons={entitiesData.getEntities.persons}
             organizations={entitiesData.getEntities.organizations}
@@ -86,7 +94,7 @@ export default function Documents() {
               };
 
               getDocuments({
-                variables: { filterOptions }
+                variables: { filterOptions },
               });
             }}
           />
@@ -97,11 +105,11 @@ export default function Documents() {
         {loading && <p className="mt-4">Documenten laden...</p>}
         {error && <p className="mt-4 text-red-600">Fout: {error.message}</p>}
 
-        {data && documents.length > 0 && (
+        {data &&
+          documents.length > 0 &&
           documents.map((doc: Document) => (
             <DocumentCard key={doc.documentId} document={doc} />
-          ))
-        )}
+          ))}
       </div>
     </main>
   );
