@@ -143,7 +143,6 @@ export default function Filter({
             }
             selected={selectedTopics || []}
             onChange={(selected) => {
-              console.log("Topics geselecteerd:", selected);
               onFilterChange?.({
                 persons: selectedPersons || [],
                 organizations: selectedOrganizations || [],
