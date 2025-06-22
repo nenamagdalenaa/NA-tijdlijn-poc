@@ -58,12 +58,11 @@ export default function Filter({
 
       <EntityFilter
         title="Personen"
-        prefix="person"
         entities={persons?.map((p) => ({ id: p.personId, name: p.name })) || []}
-        selected={selectedPersons?.map((id) => `person:${id}`) || []}
+        selected={selectedPersons || []}
         onChange={(selected) =>
           onFilterChange?.({
-            persons: selected.map((id) => id.split(":")[1]),
+            persons: selected,
             organizations: selectedOrganizations || [],
             groups: selectedGroups || [],
             dateRange: {
@@ -76,16 +75,15 @@ export default function Filter({
       />
       <EntityFilter
         title="Organisaties"
-        prefix="org"
         entities={
           organizations?.map((o) => ({ id: o.organizationId, name: o.name })) ||
           []
         }
-        selected={selectedOrganizations?.map((id) => `org:${id}`) || []}
+        selected={selectedOrganizations || []}
         onChange={(selected) =>
           onFilterChange?.({
             persons: selectedPersons || [],
-            organizations: selected.map((id) => id.split(":")[1]),
+            organizations: selected,
             groups: selectedGroups || [],
             dateRange: {
               from: dateRange?.from ?? null,
@@ -98,14 +96,13 @@ export default function Filter({
 
       <EntityFilter
         title="Bevolkingsgroepen"
-        prefix="group"
         entities={groups?.map((g) => ({ id: g.groupId, name: g.name })) || []}
-        selected={selectedGroups?.map((id) => `group:${id}`) || []}
+        selected={selectedGroups || []}
         onChange={(selected) =>
           onFilterChange?.({
             persons: selectedPersons || [],
             organizations: selectedOrganizations || [],
-            groups: selected.map((id) => id.split(":")[1]),
+            groups: selected,
             dateRange: {
               from: dateRange?.from ?? null,
               to: dateRange?.to ?? null,
@@ -140,16 +137,13 @@ export default function Filter({
         <>
           <EntityFilter
             title="Onderwerpen"
-            prefix="topic"
             entities={
               topics?.map((t) => ({ id: String(t.topicId), name: t.name })) ||
               []
             }
-            selected={selectedTopics?.map((id) => `topic:${String(id)}`) || []}
+            selected={selectedTopics || []}
             onChange={(selected) => {
-              const newSelected = selected.map((id) => id.split(":")[1]);
-              console.log("Topics geselecteerd:", newSelected);
-
+              console.log("Topics geselecteerd:", selected);
               onFilterChange?.({
                 persons: selectedPersons || [],
                 organizations: selectedOrganizations || [],
@@ -158,7 +152,7 @@ export default function Filter({
                   from: dateRange?.from ?? null,
                   to: dateRange?.to ?? null,
                 },
-                topics: selected.map((id) => id.split(":")[1]),
+                topics: selected,
               });
             }}
           />
