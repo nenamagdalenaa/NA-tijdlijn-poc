@@ -77,7 +77,16 @@ export default function Filter({
     },
     {
       title: "Onderwerpen",
-      entities: topics?.map((t) => ({ id: t.topicId, name: t.name })) || [],
+      entities:
+        topics?.map((t) => {
+          console.log(
+            "[topics mapping] topicId:",
+            t.topicId,
+            "type:",
+            typeof t.topicId
+          );
+          return { id: String(t.topicId), name: t.name };
+        }) || [],
       selected: selectedTopics || [],
       key: "topics",
       show: showTopics,
@@ -97,6 +106,13 @@ export default function Filter({
             entities={entities}
             selected={selected}
             onChange={(newSelected) => {
+              console.log(
+                "[EntityFilter onChange] newSelected:",
+                newSelected,
+                "type[0]:",
+                typeof newSelected[0]
+              );
+
               onFilterChange?.({
                 persons:
                   key === "persons" ? newSelected : selectedPersons || [],
@@ -105,7 +121,10 @@ export default function Filter({
                     ? newSelected
                     : selectedOrganizations || [],
                 groups: key === "groups" ? newSelected : selectedGroups || [],
-                topics: key === "topics" ? newSelected : selectedTopics || [],
+                topics:
+                  key === "topics"
+                    ? newSelected.map(String)
+                    : selectedTopics || [],
                 dateRange: {
                   from: dateRange?.from ?? null,
                   to: dateRange?.to ?? null,

@@ -37,10 +37,10 @@ export default function EntityFilter({
   }, [entities, debouncedSearch]);
 
   const handleToggle = (id: string) => {
-    console.log(
-      `[EntityFilter] handleToggle: id=${id}, selected before=`,
-      selected
-    );
+    // console.log(
+    //   `[EntityFilter] handleToggle: id=${id}, selected before=`,
+    //   selected
+    // );
     if (selected.includes(id)) {
       const newSelected = selected.filter((s) => s !== id);
       console.log(

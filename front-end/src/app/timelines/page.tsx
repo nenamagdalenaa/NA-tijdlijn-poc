@@ -3,16 +3,25 @@ import { useLazyQuery, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import TimelineCard from "@/components/timeline/TimelineCard";
 import Filter from "@/components/filter/Filter";
-import { GET_TIMELINE, GET_ENTITIES, GET_TOPICS } from "@/graphql/queries/queries";
+import {
+  GET_TIMELINE,
+  GET_ENTITIES,
+  GET_TOPICS,
+} from "@/graphql/queries/queries";
 import { Event, FilterOptions } from "@/graphql/generated/graphql";
 
 export default function Timelines() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
-  const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([]);
+  const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>(
+    []
+  );
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
-  const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({
+  const [dateRange, setDateRange] = useState<{
+    from: Date | null;
+    to: Date | null;
+  }>({
     from: null,
     to: null,
   });
@@ -34,7 +43,7 @@ export default function Timelines() {
     };
 
     getTimeline({
-      variables: { filterOptions }
+      variables: { filterOptions },
     });
   };
 
@@ -44,7 +53,8 @@ export default function Timelines() {
       <div className="w-1/3 p-7 overflow-y-auto border-r border-gray-300 bg-white">
         <h1 className="font-extrabold text-4xl mb-2">Tijdlijnen</h1>
         <p className="mb-6 text-gray-700">
-          Zoek op een keyword om een tijdlijn van samenhangende relevante gebeurtenissen te maken.
+          Zoek op een keyword om een tijdlijn van samenhangende relevante
+          gebeurtenissen te maken.
         </p>
 
         <form onSubmit={handleSearch} className="mb-6">
@@ -75,14 +85,19 @@ export default function Timelines() {
             showDateRange={true}
             showTopics={true}
             dateRange={dateRange}
-            onFilterChange={({ persons, organizations, groups, dateRange, topics }) => {
+            onFilterChange={({
+              persons,
+              organizations,
+              groups,
+              dateRange,
+              topics,
+            }) => {
               setSelectedPersons(persons);
               setSelectedOrganizations(organizations);
               setSelectedGroups(groups);
               setDateRange(dateRange);
-              setSelectedTopics(topics);
+              setSelectedTopics(topics.map(String));
             }}
-
             onApply={() => {
               const filterOptions: FilterOptions = {
                 query: searchTerm.trim() || undefined,
@@ -93,9 +108,9 @@ export default function Timelines() {
                 endDate: dateRange.to?.toISOString().split("T")[0],
                 topics: selectedTopics,
               };
-              
+
               getTimeline({
-                variables: { filterOptions }
+                variables: { filterOptions },
               });
             }}
           />
