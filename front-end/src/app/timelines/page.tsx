@@ -85,6 +85,7 @@ export default function Timelines() {
             showDateRange={true}
             showTopics={true}
             dateRange={dateRange}
+            selectedTopics={selectedTopics}
             onFilterChange={({
               persons,
               organizations,
@@ -96,7 +97,7 @@ export default function Timelines() {
               setSelectedOrganizations(organizations);
               setSelectedGroups(groups);
               setDateRange(dateRange);
-              setSelectedTopics(topics.map(String));
+              setSelectedTopics(topics);
             }}
             onApply={() => {
               const filterOptions: FilterOptions = {

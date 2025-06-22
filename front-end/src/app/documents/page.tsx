@@ -34,6 +34,7 @@ export default function Documents() {
       persons: selectedPersons,
       organizations: selectedOrganizations,
       groups: selectedGroups,
+      topics: selectedTopics,
     };
 
     getDocuments({
