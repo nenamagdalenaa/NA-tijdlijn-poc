@@ -1,14 +1,16 @@
-import { pool } from './db';
-import { Document } from './generated/graphql';
-import { DocumentParent, GraphQLContext } from './types';
+import { pool } from "./db";
+import { Document } from "./generated/graphql";
+import { DocumentParent, GraphQLContext } from "./types";
 
 export const resolvers = {
   Query: {
     topics: async () => {
-      const result = await pool.query('SELECT topic_id, name, summary, top_words FROM topic');
+      const result = await pool.query(
+        "SELECT topic_id, name, summary, top_words FROM topic ORDER BY name ASC"
+      );
       return result.rows
-        .filter(row => row.topic_id)
-        .map(row => ({
+        .filter((row) => row.topic_id)
+        .map((row) => ({
           topicId: row.topic_id,
           name: row.name,
           summary: row.summary,
@@ -18,7 +20,7 @@ export const resolvers = {
 
     topic: async (_: any, args: { topicId: string }) => {
       const result = await pool.query(
-        'SELECT topic_id, name, summary, top_words FROM topic WHERE topic_id = $1',
+        "SELECT topic_id, name, summary, top_words FROM topic WHERE topic_id = $1",
         [args.topicId]
       );
 
@@ -61,17 +63,17 @@ export const resolvers = {
   `);
 
       return {
-        persons: personsRes.rows.map(row => ({
+        persons: personsRes.rows.map((row) => ({
           entityId: row.person_id,
           name: row.name,
           count: parseInt(row.count),
         })),
-        organizations: orgRes.rows.map(row => ({
+        organizations: orgRes.rows.map((row) => ({
           entityId: row.organization_id,
           name: row.name,
           count: parseInt(row.count),
         })),
-        groups: groupRes.rows.map(row => ({
+        groups: groupRes.rows.map((row) => ({
           entityId: row.group_id,
           name: row.name,
           count: parseInt(row.count),
@@ -93,17 +95,17 @@ export const resolvers = {
       `);
 
       return {
-        persons: personsRes.rows.map(row => ({
+        persons: personsRes.rows.map((row) => ({
           personId: row.person_id,
           name: row.name,
           documents: [], // voeg leeg array toe als je geen relaties wilt ophalen
         })),
-        organizations: orgsRes.rows.map(row => ({
+        organizations: orgsRes.rows.map((row) => ({
           organizationId: row.organization_id,
           name: row.name,
           documents: [],
         })),
-        groups: groupsRes.rows.map(row => ({
+        groups: groupsRes.rows.map((row) => ({
           groupId: row.group_id,
           name: row.name,
           documents: [],
@@ -112,7 +114,8 @@ export const resolvers = {
     },
 
     topEntitiesByTopic: async (_: any, { topicId }: { topicId: string }) => {
-      const personsRes = await pool.query(`
+      const personsRes = await pool.query(
+        `
         SELECT p.person_id, p.name, COUNT(*) AS count
         FROM person p
         JOIN document_person dp ON p.person_id = dp.person_id
@@ -121,9 +124,12 @@ export const resolvers = {
         GROUP BY p.person_id, p.name
         ORDER BY count DESC
         LIMIT 6
-      `, [topicId]);
+      `,
+        [topicId]
+      );
 
-      const orgRes = await pool.query(`
+      const orgRes = await pool.query(
+        `
         SELECT o.organization_id, o.name, COUNT(*) AS count
         FROM organization o
         JOIN document_organization dorg ON o.organization_id = dorg.organization_id
@@ -132,9 +138,12 @@ export const resolvers = {
         GROUP BY o.organization_id, o.name
         ORDER BY count DESC
         LIMIT 6
-      `, [topicId]);
+      `,
+        [topicId]
+      );
 
-      const groupRes = await pool.query(`
+      const groupRes = await pool.query(
+        `
         SELECT g.group_id, g.name, COUNT(*) AS count
         FROM "Group" g
         JOIN document_group dg ON g.group_id = dg.group_id
@@ -143,20 +152,22 @@ export const resolvers = {
         GROUP BY g.group_id, g.name
         ORDER BY count DESC
         LIMIT 6
-      `, [topicId]);
+      `,
+        [topicId]
+      );
 
       return {
-        persons: personsRes.rows.map(row => ({
+        persons: personsRes.rows.map((row) => ({
           entityId: row.person_id,
           name: row.name,
           count: parseInt(row.count),
         })),
-        organizations: orgRes.rows.map(row => ({
+        organizations: orgRes.rows.map((row) => ({
           entityId: row.organization_id,
           name: row.name,
           count: parseInt(row.count),
         })),
-        groups: groupRes.rows.map(row => ({
+        groups: groupRes.rows.map((row) => ({
           entityId: row.group_id,
           name: row.name,
           count: parseInt(row.count),
@@ -197,7 +208,9 @@ export const resolvers = {
       let idx = 1;
 
       if (query) {
-        whereClauses.push(`to_tsvector('dutch', e.description) @@ plainto_tsquery('dutch', $${idx})`);
+        whereClauses.push(
+          `to_tsvector('dutch', e.description) @@ plainto_tsquery('dutch', $${idx})`
+        );
         values.push(query);
         idx++;
       }
@@ -244,14 +257,15 @@ export const resolvers = {
         idx++;
       }
 
-      const whereSQL = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+      const whereSQL =
+        whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
       const joins = [
         `JOIN document d ON e.document_id = d.document_id`,
-        (query && topics && topics.length > 0)
+        query && topics && topics.length > 0
           ? `JOIN document_topic dt ON d.document_id = dt.document_id`
           : topicId
-            ? `JOIN (
+          ? `JOIN (
             SELECT document_id, topic_id, probability
             FROM (
               SELECT *,
@@ -260,11 +274,13 @@ export const resolvers = {
             ) ranked
             WHERE rank = 1
           ) dt ON d.document_id = dt.document_id`
-            : '',
+          : "",
         `LEFT JOIN document_person dp ON d.document_id = dp.document_id`,
         `LEFT JOIN document_organization dorg ON d.document_id = dorg.document_id`,
         `LEFT JOIN document_group dg ON d.document_id = dg.document_id`,
-      ].filter(Boolean).join('\n');
+      ]
+        .filter(Boolean)
+        .join("\n");
 
       const querySQL = `
         WITH ranked_topics AS (
@@ -281,7 +297,7 @@ export const resolvers = {
 
       const result = await pool.query(querySQL, values);
 
-      return result.rows.map(event => ({
+      return result.rows.map((event) => ({
         document: {
           documentId: event.document_id,
           title: event.title,
@@ -292,7 +308,6 @@ export const resolvers = {
         description: event.description,
       }));
     },
-
 
     getDocuments: async (
       _: any,
@@ -337,7 +352,9 @@ export const resolvers = {
           filters.push(`dt.topic_id = ANY($${params.length})`);
         }
       } else {
-        throw new Error("filterOptions must contain either 'query' or 'topicId'");
+        throw new Error(
+          "filterOptions must contain either 'query' or 'topicId'"
+        );
       }
 
       if (persons.length) {
@@ -391,8 +408,6 @@ export const resolvers = {
         dossierId: row.dossier_id,
       }));
     },
-
-
   },
   Document: {
     persons: (parent: Document, _: any, context: GraphQLContext) => {
@@ -405,10 +420,10 @@ export const resolvers = {
       return context.loaders.groupLoader.load(parent.documentId);
     },
     dossier: (parent: DocumentParent, _: any, context: GraphQLContext) => {
-      return context.loaders.dossierLoader.load(parent.dossierId ?? '');
+      return context.loaders.dossierLoader.load(parent.dossierId ?? "");
     },
     topics: (parent: Document, _: any, context: GraphQLContext) => {
       return context.loaders.topicLoader.load(parent.documentId);
     },
-  }
+  },
 };
