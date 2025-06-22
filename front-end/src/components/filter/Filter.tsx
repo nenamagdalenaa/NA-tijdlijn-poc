@@ -47,70 +47,73 @@ export default function Filter({
       dateRange: { from: dateRange?.from ?? null, to: dateRange?.to ?? null },
       topics: selectedTopics || [],
     });
-    console.log(topics);
 
     onApply?.();
   };
+
+  const entityFilters = [
+    {
+      title: "Personen",
+      entities: persons?.map((p) => ({ id: p.personId, name: p.name })) || [],
+      selected: selectedPersons || [],
+      key: "persons",
+      show: true,
+    },
+    {
+      title: "Organisaties",
+      entities:
+        organizations?.map((o) => ({ id: o.organizationId, name: o.name })) ||
+        [],
+      selected: selectedOrganizations || [],
+      key: "organizations",
+      show: true,
+    },
+    {
+      title: "Bevolkingsgroepen",
+      entities: groups?.map((g) => ({ id: g.groupId, name: g.name })) || [],
+      selected: selectedGroups || [],
+      key: "groups",
+      show: true,
+    },
+    {
+      title: "Onderwerpen",
+      entities: topics?.map((t) => ({ id: t.topicId, name: t.name })) || [],
+      selected: selectedTopics || [],
+      key: "topics",
+      show: showTopics,
+    },
+  ];
 
   return (
     <div className="bg-gray-200 p-4 shadow-md">
       <h2 className="text-xl font-bold mb-2">Filter</h2>
 
-      <EntityFilter
-        title="Personen"
-        entities={persons?.map((p) => ({ id: p.personId, name: p.name })) || []}
-        selected={selectedPersons || []}
-        onChange={(selected) =>
-          onFilterChange?.({
-            persons: selected,
-            organizations: selectedOrganizations || [],
-            groups: selectedGroups || [],
-            dateRange: {
-              from: dateRange?.from ?? null,
-              to: dateRange?.to ?? null,
-            },
-            topics: selectedTopics || [],
-          })
-        }
-      />
-      <EntityFilter
-        title="Organisaties"
-        entities={
-          organizations?.map((o) => ({ id: o.organizationId, name: o.name })) ||
-          []
-        }
-        selected={selectedOrganizations || []}
-        onChange={(selected) =>
-          onFilterChange?.({
-            persons: selectedPersons || [],
-            organizations: selected,
-            groups: selectedGroups || [],
-            dateRange: {
-              from: dateRange?.from ?? null,
-              to: dateRange?.to ?? null,
-            },
-            topics: selectedTopics || [],
-          })
-        }
-      />
-
-      <EntityFilter
-        title="Bevolkingsgroepen"
-        entities={groups?.map((g) => ({ id: g.groupId, name: g.name })) || []}
-        selected={selectedGroups || []}
-        onChange={(selected) =>
-          onFilterChange?.({
-            persons: selectedPersons || [],
-            organizations: selectedOrganizations || [],
-            groups: selected,
-            dateRange: {
-              from: dateRange?.from ?? null,
-              to: dateRange?.to ?? null,
-            },
-            topics: selectedTopics || [],
-          })
-        }
-      />
+      {entityFilters
+        .filter((f) => f.show)
+        .map(({ title, entities, selected, key }) => (
+          <EntityFilter
+            key={key}
+            title={title}
+            entities={entities}
+            selected={selected}
+            onChange={(newSelected) => {
+              onFilterChange?.({
+                persons:
+                  key === "persons" ? newSelected : selectedPersons || [],
+                organizations:
+                  key === "organizations"
+                    ? newSelected
+                    : selectedOrganizations || [],
+                groups: key === "groups" ? newSelected : selectedGroups || [],
+                topics: key === "topics" ? newSelected : selectedTopics || [],
+                dateRange: {
+                  from: dateRange?.from ?? null,
+                  to: dateRange?.to ?? null,
+                },
+              });
+            }}
+          />
+        ))}
 
       {showDateRange && (
         <>
@@ -130,31 +133,6 @@ export default function Filter({
               }
             />
           </div>
-        </>
-      )}
-
-      {showTopics && (
-        <>
-          <EntityFilter
-            title="Onderwerpen"
-            entities={
-              topics?.map((t) => ({ id: String(t.topicId), name: t.name })) ||
-              []
-            }
-            selected={selectedTopics || []}
-            onChange={(selected) => {
-              onFilterChange?.({
-                persons: selectedPersons || [],
-                organizations: selectedOrganizations || [],
-                groups: selectedGroups || [],
-                dateRange: {
-                  from: dateRange?.from ?? null,
-                  to: dateRange?.to ?? null,
-                },
-                topics: selected,
-              });
-            }}
-          />
         </>
       )}
 
