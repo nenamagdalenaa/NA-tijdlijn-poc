@@ -79,12 +79,6 @@ export default function Filter({
       title: "Onderwerpen",
       entities:
         topics?.map((t) => {
-          console.log(
-            "[topics mapping] topicId:",
-            t.topicId,
-            "type:",
-            typeof t.topicId
-          );
           return { id: String(t.topicId), name: t.name };
         }) || [],
       selected: selectedTopics || [],
@@ -106,13 +100,6 @@ export default function Filter({
             entities={entities}
             selected={selected}
             onChange={(newSelected) => {
-              console.log(
-                "[EntityFilter onChange] newSelected:",
-                newSelected,
-                "type[0]:",
-                typeof newSelected[0]
-              );
-
               onFilterChange?.({
                 persons:
                   key === "persons" ? newSelected : selectedPersons || [],

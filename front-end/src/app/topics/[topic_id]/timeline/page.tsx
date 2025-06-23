@@ -4,7 +4,11 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@apollo/client";
 import TimelineCard from "@/components/timeline/TimelineCard";
 import Filter from "@/components/filter/Filter";
-import { GET_TOPIC, GET_ENTITIES, GET_TIMELINE } from "../../../../graphql/queries/queries";
+import {
+  GET_TOPIC,
+  GET_ENTITIES,
+  GET_TIMELINE,
+} from "../../../../graphql/queries/queries";
 
 const TimelinePage = () => {
   const params = useParams();
@@ -12,14 +16,24 @@ const TimelinePage = () => {
 
   // State voor filters
   const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
-  const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([]);
+  const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>(
+    []
+  );
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
-  const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({
+  const [dateRange, setDateRange] = useState<{
+    from: Date | null;
+    to: Date | null;
+  }>({
     from: null,
     to: null,
   });
 
-  const { data: timelineData, loading: timelineLoading, error: timelineError, refetch } = useQuery(GET_TIMELINE, {
+  const {
+    data: timelineData,
+    loading: timelineLoading,
+    error: timelineError,
+    refetch,
+  } = useQuery(GET_TIMELINE, {
     variables: { filterOptions: { topicId: topicId } },
     skip: !topicId,
   });
@@ -50,8 +64,7 @@ const TimelinePage = () => {
   if (topicError) return <p>Fout: {topicError.message}</p>;
   if (timelineLoading) return <p>Tijdlijn laden...</p>;
 
-  const topicName = topicData?.topic.name || '';
-  console.log(dateRange);
+  const topicName = topicData?.topic.name || "";
 
   return (
     <div className="p-1 h-screen flex">
@@ -77,7 +90,9 @@ const TimelinePage = () => {
         />
       </div>
       <div className="flex-1 p-7 overflow-y-auto bg-gray-50">
-        {timelineData.getTimeline && <TimelineCard timeline={timelineData.getTimeline} />}
+        {timelineData.getTimeline && (
+          <TimelineCard timeline={timelineData.getTimeline} />
+        )}
       </div>
     </div>
   );

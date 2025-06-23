@@ -37,23 +37,13 @@ export default function EntityFilter({
   }, [entities, debouncedSearch]);
 
   const handleToggle = (id: string) => {
-    // console.log(
-    //   `[EntityFilter] handleToggle: id=${id}, selected before=`,
-    //   selected
-    // );
     if (selected.includes(id)) {
       const newSelected = selected.filter((s) => s !== id);
-      console.log(
-        `[EntityFilter] handleToggle: removing id, selected after=`,
-        newSelected
-      );
+
       onChange(newSelected);
     } else {
       const newSelected = [...selected, id];
-      console.log(
-        `[EntityFilter] handleToggle: adding id, selected after=`,
-        newSelected
-      );
+
       onChange(newSelected);
     }
   };
@@ -71,14 +61,6 @@ export default function EntityFilter({
     if (!entity || !entity.id) return null;
 
     const isChecked = selected.includes(id);
-    console.log(
-      `[EntityFilter] Row: entity.id=`,
-      id,
-      "| selected=",
-      selected,
-      "| checked=",
-      isChecked
-    );
 
     return (
       <div style={style} key={id} className="flex items-center px-1">
